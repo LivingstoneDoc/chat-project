@@ -1,0 +1,207 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/Roboto-Regular.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./fonts/Roboto-LightItalic.ttf');
+  font-weight: 300;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  background-color: grey;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.container {
+  display: flex;
+  margin: 0 auto;
+  width: 1144px;
+  height: 100vh;
+}
+
+.chat {
+  margin: auto auto;
+  width: 320px;
+  height: 533px;
+  background-color: #FFFFFF;
+  padding: 0 8px;
+}
+
+.chat .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  padding: 8px 0;
+}
+
+.chat .messages-wrapper {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  height: 437px;
+  border: 1px solid #000000;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.chat .messages-wrapper .message {
+  padding: 8px;
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.chat .messages-wrapper .message.my-message {
+  align-self: flex-end;
+}
+
+.chat .messages-wrapper .message.incoming-message {
+  align-self: flex-start;
+}
+
+.chat .messages-wrapper .message.read-message {
+  background-color: #E5E5E5;
+}
+
+.chat .messages-wrapper .message.unread-message {
+  background-color: #F6F6F6;
+}
+
+.chat .messages-wrapper .message .text-message {
+  word-break: break-word;
+}
+
+.chat .messages-wrapper .message .time-message {
+  display: block;
+  text-align: end;
+  color: #333333;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 300;
+}
+
+.chat .send-message-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chat .send-message-form .message-input {
+  width: 267px;
+}
+
+.chat .send-message-form .send-message-btn {
+  width: 29px;
+  height: 32px;
+  padding: 6px;
+}
+
+.btn {
+  border: 1px solid #000000;
+  background-color: #FFFFFF;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.btn:active {
+  border: 2px solid #000000;
+}
+
+.settings-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 273px;
+  height: 319px;
+  border: none;
+  background-color: #FFFFFF;
+  padding: 0;
+}
+
+.settings-dialog::backdrop {
+  background-color: #535353;
+}
+
+.settings-dialog .dialog-wrapper {
+  height: 100%;
+  /* padding: 1rem; */
+  padding: 16px 14px;
+}
+
+.settings-dialog .header-dialog {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-dialog .header-dialog .close-dialog-btn {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+}
+.settings-dialog .header-dialog .close-dialog-btn:before {
+  content: '';
+  position: absolute;
+  border: 1px solid #535353;
+  width: 100%;
+  transform: rotate(45deg);
+  left: 0;
+}
+.settings-dialog .header-dialog .close-dialog-btn:after {
+  content: '';
+  position: absolute;
+  border: 1px solid #535353;
+  width: 100%;
+  transform: rotate(-45deg);
+  left: 0;
+}
+
+.settings-dialog .change-name-form {
+  margin-top: 16px;
+}
+
+.settings-dialog .change-name-form .name-input-and-send-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.settings-dialog .change-name-form .change-name-input {
+  width: 207px;
+}
+
+.settings-dialog .change-name-form .change-name-btn {
+  width: 30px;
+  height: 32px;
+  padding: 6px;
+}
+
+.input {
+  height: 32px;
+  border: 1px solid #000000;
+  padding-left: 8px;
+}
+
+.scrollLock {
+  overflow: hidden;
+}
