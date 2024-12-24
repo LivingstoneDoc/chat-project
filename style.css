@@ -71,12 +71,12 @@ body {
   align-self: flex-start;
 }
 
-.chat .messages-wrapper .message.read-message {
-  background-color: #E5E5E5;
+.chat .messages-wrapper .message.sent-message {
+  background-color: #F6F6F6;
 }
 
-.chat .messages-wrapper .message.unread-message {
-  background-color: #F6F6F6;
+.chat .messages-wrapper .message.delivered-message {
+  background-color: #E5E5E5;
 }
 
 .chat .messages-wrapper .message .text-message {
