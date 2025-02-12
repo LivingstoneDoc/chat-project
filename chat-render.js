@@ -1,10 +1,17 @@
 import { uiComponents } from "./ui-components.js";
 import { getMessageTime } from "./utils.js";
-import { messageAuthor } from "./db.js";
-import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus, checkMessageAuthor } from "./backend-side.js";
-import { executeDialogOperations } from "./dialog.js";
+import { messageAuthor, messagesDB } from "./db.js";
+import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus, checkMessageAuthor } from "./chat-logic.js";
+import { openDialogWindow, closeDialogWindow, returnScroll, closeDialogOnBackDrop } from "./dialog.js";
 
-executeDialogOperations();
+uiComponents.settingsBtn.addEventListener('click', () => {
+    openDialogWindow(uiComponents.settingsDialog);
+});
+uiComponents.closeDialogBtn.addEventListener('click', () => {
+    closeDialogWindow(uiComponents.settingsDialog);
+});
+uiComponents.settingsDialog.addEventListener('close', returnScroll);
+uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
 function sendMessage(e) {
     e.preventDefault();
@@ -41,4 +48,4 @@ export function renderMessages(data) {
     console.log(data);
     return uiComponents.messagesWrapper;
 }
-// renderMessages(messagesDB);
+renderMessages(messagesDB);
