@@ -121,7 +121,7 @@ body {
   border: 2px solid #000000;
 }
 
-.settings-dialog {
+.dialog {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -133,23 +133,23 @@ body {
   padding: 0;
 }
 
-.settings-dialog::backdrop {
+.dialog::backdrop {
   background-color: #535353;
 }
 
-.settings-dialog .dialog-wrapper {
+.dialog .dialog-wrapper {
   height: 100%;
   /* padding: 1rem; */
   padding: 16px 14px;
 }
 
-.settings-dialog .header-dialog {
+.dialog .header-dialog {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.settings-dialog .header-dialog .close-dialog-btn {
+.dialog .header-dialog .close-dialog-btn {
   position: relative;
   width: 10px;
   height: 10px;
@@ -157,7 +157,7 @@ body {
   background-color: inherit;
   cursor: pointer;
 }
-.settings-dialog .header-dialog .close-dialog-btn:before {
+.dialog .header-dialog .close-dialog-btn:before {
   content: '';
   position: absolute;
   border: 1px solid #535353;
@@ -165,7 +165,7 @@ body {
   transform: rotate(45deg);
   left: 0;
 }
-.settings-dialog .header-dialog .close-dialog-btn:after {
+.dialog .header-dialog .close-dialog-btn:after {
   content: '';
   position: absolute;
   border: 1px solid #535353;
@@ -174,7 +174,7 @@ body {
   left: 0;
 }
 
-.settings-dialog .change-name-form {
+.dialog .change-name-form {
   margin-top: 16px;
 }
 
@@ -204,4 +204,43 @@ body {
 
 .scrollLock {
   overflow: hidden;
+}
+
+.auth-dialog .auth-form {
+  margin-top: 70px;
+}
+
+.auth-dialog .auth-form .input-button-wrapper {
+  margin-top: 3px;
+}
+
+.auth-dialog .auth-form .input-button-wrapper .email-input {
+  width: 100%;
+}
+
+.auth-dialog .auth-form .input-button-wrapper .btns-wrapper {
+  box-sizing: border-box;
+  margin-top: 7px;
+  display: flex;
+  gap: 5px;
+}
+
+.message-block {
+  margin-top: 10px;
+}
+
+.message-block.success {
+  color: #32CD32;
+}
+
+.message-block.error {
+  color: #B22222;
+}
+
+.message-block.info {
+  color: #000000;
+}
+
+.hide-chat {
+  display: none;
 }

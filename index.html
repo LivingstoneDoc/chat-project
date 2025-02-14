@@ -7,6 +7,27 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+
+  <dialog id="authDialog" class="dialog auth-dialog" aria-labelledby="auth-dialog">
+    <div class="dialog-wrapper">
+      <div class="header-dialog">
+        <div class="title-dialog">Авторизация</div>
+        <button class="close-dialog-btn"></button>
+      </div>
+      <form class="auth-form form">
+        <label class="email" for="email">Почта:</label>
+        <div class="input-button-wrapper">
+          <input id="email" class="email-input input" type="text">
+          <div class="btns-wrapper">
+            <button class="get-code-btn btn">Получить код</button>
+            <button class="enter-code-btn btn">Ввести код</button>
+          </div>
+        </div>
+      </form>
+      <div class="message-block"></div>
+    </div>
+  </dialog>
+
   <div class="container">
     <section class="chat">
       <header class="header">
@@ -29,7 +50,7 @@
     </section>
   </div>
 
-  <dialog id="dialogSettings" class="settings-dialog" aria-labelledby="settings-dialog">
+  <dialog id="dialogSettings" class="dialog settings-dialog" aria-labelledby="settings-dialog">
     <div class="dialog-wrapper">
       <div class="header-dialog">
         <div class="title-dialog">Настройки</div>

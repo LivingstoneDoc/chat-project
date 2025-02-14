@@ -2,16 +2,9 @@ import { uiComponents } from "./ui-components.js";
 import { getMessageTime } from "./utils.js";
 import { messageAuthor, messagesDB } from "./db.js";
 import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus, checkMessageAuthor } from "./chat-logic.js";
-import { openDialogWindow, closeDialogWindow, returnScroll, closeDialogOnBackDrop } from "./dialog.js";
+import { settingsDialogOperations } from "./dialog.js";
 
-uiComponents.settingsBtn.addEventListener('click', () => {
-    openDialogWindow(uiComponents.settingsDialog);
-});
-uiComponents.closeDialogBtn.addEventListener('click', () => {
-    closeDialogWindow(uiComponents.settingsDialog);
-});
-uiComponents.settingsDialog.addEventListener('close', returnScroll);
-uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
+settingsDialogOperations();
 
 function sendMessage(e) {
     e.preventDefault();
