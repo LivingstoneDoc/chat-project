@@ -11,4 +11,5 @@ export const uiComponents = {
     emailInput: document.querySelector('.email-input'),
     getCodeBtn: document.querySelector('.get-code-btn'),
     enterCodeBtn: document.querySelector('.enter-code-btn'),
+    messageBlock: document.querySelector('.message-block')
 };

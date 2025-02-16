@@ -2,9 +2,9 @@ import { uiComponents } from "./ui-components.js";
 import { getMessageTime } from "./utils.js";
 import { messageAuthor, messagesDB } from "./db.js";
 import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus, checkMessageAuthor } from "./chat-logic.js";
-import { settingsDialogOperations } from "./dialog.js";
+import { settingsDialogComponent } from "./settings-dialog.js";
 
-settingsDialogOperations();
+settingsDialogComponent();
 
 function sendMessage(e) {
     e.preventDefault();
