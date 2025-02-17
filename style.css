@@ -225,6 +225,23 @@ body {
   gap: 5px;
 }
 
+.confirm-dialog .confirm-form {
+  margin-top: 70px;
+}
+
+.confirm-dialog .confirm-form .input-button-wrapper {
+  margin-top: 3px;
+}
+
+.confirm-dialog .confirm-form .input-button-wrapper .confirm-input {
+  width: 100%;
+}
+
+.confirm-dialog .confirm-form .input-button-wrapper .enter-btn {
+  display: inline-block;
+  margin-top: 7px;
+}
+
 .message-block {
   margin-top: 10px;
 }
