@@ -67,7 +67,7 @@ export function authDialogComponent() {
                 'Content-type': 'application/json; charset=UTF-8'
             }
         });
-        // console.log('response', response);
+        //console.log('response', response);
         checkResponseStatus(response.status);
         return await response.json();
         } catch(err) {
@@ -82,7 +82,7 @@ export function authDialogComponent() {
         try {
             e.preventDefault();
             const data = await sendEmail();
-            // console.log('data', data);
+            //console.log('data', data);
             return data;
         } catch(err) {
             console.error(err);

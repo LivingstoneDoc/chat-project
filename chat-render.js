@@ -38,7 +38,7 @@ export function renderMessages(data) {
     });
     
     uiComponents.messagesWrapper.append(messagesFragment);
-    console.log(data);
+    //console.log(data);
     return uiComponents.messagesWrapper;
 }
 

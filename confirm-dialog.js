@@ -13,8 +13,6 @@ export function confirmDialogComponent() {
     clickCloseDialog(uiComponents.confirmDialog);
     uiComponents.confirmDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5pa2l0YS5iYWJpa292QG1haWwucnUiLCJpYXQiOjE3MzkyNDE1NzYsImV4cCI6MTc0MjgzNzk3Nn0.7WDFbUR0DbUsvMltuKMGyEbZENNgpwNxLYRmX5ErOaM
-
     function checkConfirmInput() {
         if (!uiComponents.confirmInput.value) {
             uiComponents.confirmMessageBlock.textContent = 'Пожалуйста, введите код подтверждения';
@@ -48,8 +46,8 @@ export function confirmDialogComponent() {
     async function getInfo() {
             const cookie = getCookie();
             const token = cookie.token;
-            console.log(cookie);
-            console.log(cookie.token);
+            //console.log(cookie);
+            //console.log(cookie.token);
         const endpoint = 'https://edu.strada.one/api/user/me';
         const response = await fetch(endpoint, {
             method: 'GET',
@@ -57,12 +55,12 @@ export function confirmDialogComponent() {
                 'Authorization': `Bearer ${token}`
             }
         });
-        console.log('response', response);
+        //console.log('response', response);
         return await response.json();
     }
     
     async function getUser() {
         const userData = await getInfo();
-        console.log('userData', userData);
+        //console.log('userData', userData);
     }
 }

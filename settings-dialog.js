@@ -80,7 +80,7 @@ export function settingsDialogComponent() {
                 }
             });
             checkResponseStatus(response.status);
-            console.log('response', response);
+            //console.log('response', response);
             return await response.json();
         } catch(err) {
             console.error(err);
@@ -95,8 +95,8 @@ export function settingsDialogComponent() {
         try {
             e.preventDefault();
             const data = await changeName();
-            console.log('data', data);
-            console.log('data name', data.name);
+            //console.log('data', data);
+            //console.log('data name', data.name);
             return data;
         } catch(err) {
             console.error(err);
