@@ -5,7 +5,7 @@ export function openDialogWindow(dialogName) {
     uiComponents.body.classList.add('scrollLock');
 }
 
-function closeDialogWindow(dialogName) {
+export function closeDialogWindow(dialogName) {
     dialogName.close();
     returnScroll();
 }

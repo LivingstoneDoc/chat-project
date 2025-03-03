@@ -41,4 +41,8 @@ export function renderMessages(data) {
     console.log(data);
     return uiComponents.messagesWrapper;
 }
-renderMessages(messagesDB);
+
+export function showChatWithMessages() {
+    uiComponents.chat.classList.remove('hide-chat');
+    renderMessages(messagesDB);
+}

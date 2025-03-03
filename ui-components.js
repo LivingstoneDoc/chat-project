@@ -1,9 +1,15 @@
 export const uiComponents = {
     settingsBtn: document.querySelector('.settings-btn'),
     closeDialogBtns: document.querySelectorAll('.close-dialog-btn'),
-    settingsDialog: document.querySelector('#dialogSettings'),
+    settingsDialog: document.querySelector('#settingsDialog'),
+    settingsMessageBlock: settingsDialog.querySelector('.message-block'),
+    changeNameForm: document.querySelector('.change-name-form'),
+    changeNameInput: document.querySelector('.change-name-input'),
+    changeNameBtn: document.querySelector('.change-name-btn'),
     authDialog: document.querySelector('#authDialog'),
+    authMessageBlock: authDialog.querySelector('.message-block'),
     confirmDialog: document.querySelector('#confirmDialog'),
+    confirmMessageBlock: confirmDialog.querySelector('.message-block'),
     body: document.querySelector('body'),
     messagesWrapper: document.querySelector('.messages-wrapper'),
     messageInput: document.querySelector('.message-input'),
@@ -12,7 +18,7 @@ export const uiComponents = {
     emailInput: document.querySelector('.email-input'),
     getCodeBtn: document.querySelector('.get-code-btn'),
     enterCodeBtn: document.querySelector('.enter-code-btn'),
-    messageBlock: document.querySelector('.message-block'),
     confirmInput: document.querySelector('.confirm-input'),
-    confirmForm: document.querySelector('.confirm-form')
+    confirmForm: document.querySelector('.confirm-form'),
+    chat: document.querySelector('.chat')
 };

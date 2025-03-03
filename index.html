@@ -46,7 +46,7 @@
   </dialog>
 
   <div class="container">
-    <section class="chat">
+    <section class="chat hide-chat">
       <header class="header">
         <button class="settings-btn btn">Настройки</button>
         <button class="logout-btn btn">Выйти</button>
@@ -67,7 +67,7 @@
     </section>
   </div>
 
-  <dialog id="dialogSettings" class="dialog settings-dialog" aria-labelledby="settings-dialog">
+  <dialog id="settingsDialog" class="dialog settings-dialog" aria-labelledby="settings-dialog">
     <div class="dialog-wrapper">
       <div class="header-dialog">
         <div class="title-dialog">Настройки</div>
@@ -76,10 +76,11 @@
       <form class="change-name-form">
         <label class="name-in-chat" for="nickname">Имя в чате:</label>
         <div class="name-input-and-send-button">
-          <input id="nickname" class="change-name-input input" type="text" value="Стив"/>
+          <input id="nickname" class="change-name-input input" type="text"/>
           <button class="change-name-btn btn">-></button>
         </div>
       </form>
+      <div class="message-block"></div>
     </div>
   </dialog>
   <script type="module" src="./index.js"></script>

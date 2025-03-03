@@ -5,7 +5,7 @@ import { confirmDialogComponent } from "./confirm-dialog.js";
 const authModalMessages = {
     emptyInputValue: 'Пожалуйста, введите Email',
     codeSending: 'Отправка кода...',
-    sentSuccessfuly: 'Код успешно отправлен на почту:',
+    sentSuccessfully: 'Код успешно отправлен на почту:',
     spamFolder: 'Не забудьте проверить папку спам',
     incorrentEmail: 'Email указан неверно',
     notFoundEmail: 'Email не найден',
@@ -13,7 +13,7 @@ const authModalMessages = {
 };
 
 const responseCodes = {
-    200: authModalMessages.sentSuccessfuly,
+    200: authModalMessages.sentSuccessfully,
     400: authModalMessages.incorrentEmail,
     404: authModalMessages.notFoundEmail,
     500: authModalMessages.serverError
@@ -25,8 +25,8 @@ export function authDialogComponent() {
 
     function setMessage(message, type) {
         clearInfoMessages();
-        uiComponents.messageBlock.textContent = message;
-        uiComponents.messageBlock.classList.add(type);
+        uiComponents.authMessageBlock.textContent = message;
+        uiComponents.authMessageBlock.classList.add(type);
     }
     
     function checkResponseStatus(status) {
@@ -48,7 +48,7 @@ export function authDialogComponent() {
     }
     
     function clearInfoMessages() {
-        uiComponents.messageBlock.classList.remove('success', 'error', 'info');
+        uiComponents.authMessageBlock.classList.remove('success', 'error', 'info');
     }
     
     async function sendEmail() {

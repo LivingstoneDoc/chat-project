@@ -8,3 +8,15 @@ export function getMessageTime() {
     const time = `${formatter.format(currentDate)}`;
     return time;
 }
+
+export function setCookie(cookieValue) {
+    document.cookie = cookieValue;
+}
+
+export function getCookie() {
+    return document.cookie.split('; ').reduce((acc, item) => {
+        const [key, value] = item.split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+}
