@@ -261,3 +261,9 @@ body {
 .hide-chat {
   display: none;
 }
+
+.text-center {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

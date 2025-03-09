@@ -1,11 +1,10 @@
-export function getMessageTime() {
-    const currentDate = new Date();
+export function getMessageTime(messageTime) {
+    messageTime = new Date(messageTime);
     const options = {
         hour: '2-digit',
         minute: '2-digit'
     };
-    const formatter = new Intl.DateTimeFormat('ru-RU', options);
-    const time = `${formatter.format(currentDate)}`;
+    const time = messageTime.toLocaleString('ru-RU', options);
     return time;
 }
 

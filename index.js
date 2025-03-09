@@ -4,9 +4,9 @@ import { closeDialogWindow } from "./dialog.js";
 import { uiComponents } from "./ui-components.js";
 import { showChatWithMessages } from "./chat-render.js";
 
-const cookie = getCookie();
-const cookieToken = cookie.token;
 function isTokenCookieValid() {
+    const cookie = getCookie();
+    const cookieToken = cookie.token;
     if (!cookieToken) {
         authDialogComponent();
     } else {
