@@ -50,28 +50,31 @@ settingsDialogComponent();
 // }
 // uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
 
+function getMessageTemplate(data) {
+    const message = document.createElement('div');
+    message.classList.add('message');
+    checkDeliveredMessage(data.isDelivered, message);
+    changeMessageStatus(data, message);
+    checkMessageAuthor(data.mailer, message);
+    const messageContent = uiComponents.messageTemplate.content.cloneNode(true);
+    messageContent.querySelector('.mailer').textContent = `${data.user.name}:`;
+    messageContent.querySelector('.text-message').textContent = data.text;
+    const messageTime = getMessageTime(data.createdAt);
+    messageContent.querySelector('.time-message').textContent = messageTime;
+    message.append(messageContent);
+    return message;
+}
+
 export function renderMessages(data) {
     uiComponents.messagesWrapper.innerHTML = '';
     clearMessages();
     checkMessagesList(data);
     const messagesFragment = document.createDocumentFragment();
-    data.forEach(dataItem => {
-        const message = document.createElement('div');
-        message.classList.add('message');
-        checkDeliveredMessage(dataItem.isDelivered, message);
-        changeMessageStatus(dataItem, message);
-        checkMessageAuthor(dataItem.mailer, message);
-        const messageContent = uiComponents.messageTemplate.content.cloneNode(true);
-        messageContent.querySelector('.mailer').textContent = `${dataItem.user.name}:`;
-        messageContent.querySelector('.text-message').textContent = dataItem.text;
-        const messageTime = getMessageTime(dataItem.createdAt);
-        messageContent.querySelector('.time-message').textContent = messageTime;
-        message.append(messageContent);
+    data.map(dataItem => {
+        const message = getMessageTemplate(dataItem);
         messagesFragment.prepend(message);
     });
-    
-    uiComponents.messagesWrapper.append(messagesFragment);
-    return uiComponents.messagesWrapper;
+    return uiComponents.messagesWrapper.append(messagesFragment);
 }
 
 async function getMessagesResponse() {
