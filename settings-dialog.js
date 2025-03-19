@@ -1,60 +1,46 @@
-import { uiComponents } from "./ui-components.js";
+import { constants } from "./constants.js";
 import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
-import { getCookie } from "./utils.js";
+import { setMessage, getToken } from "./utils.js";
 
 export function settingsDialogComponent() {
 
-    const settingModalMessages = {
-        emptyNameInput: 'Пожалуйста, введите имя',
-        nameTooShort: 'Имя слишком короткое',
-        nameTooLong: 'Имя слишком длинное',
-        nameChanging: 'Загрузка...',
-        nameChangeSuccessfully: 'Имя успешно изменено:',
-        serverError: 'Внутренняя ошибка сервера'
-    };
-
-    const responseCodes = {
-        200: settingModalMessages.nameChangeSuccessfully,
-        500: settingModalMessages.serverError
-    };
-
-    uiComponents.settingsBtn.addEventListener('click', () => {
-        openDialogWindow(uiComponents.settingsDialog);
+    constants.uiComponents.settingsBtn.addEventListener('click', () => {
+        openDialogWindow(constants.uiComponents.settingsDialog);
     });
-    clickCloseDialog(uiComponents.settingsDialog);
-    uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
+    clickCloseDialog(constants.uiComponents.settingsDialog);
+    constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    function clearInfoMessages() {
-        uiComponents.settingsMessageBlock.classList.remove('success', 'error', 'info');
-    }
+    // function clearInfoMessages() {
+    //     constants.uiComponents.settingsMessageBlock.classList.remove('success', 'error', 'info');
+    // }
 
-    function setMessage(message, type) {
-        clearInfoMessages();
-        uiComponents.settingsMessageBlock.textContent = message;
-        uiComponents.settingsMessageBlock.classList.add(type);
-    }
+    // function setMessage(message, type) {
+    //     clearInfoMessages();
+    //     constants.uiComponents.settingsMessageBlock.textContent = message;
+    //     constants.uiComponents.settingsMessageBlock.classList.add(type);
+    // }
 
     function checkResponseStatus(status) {
-        let message = responseCodes[status];
+        let message = constants.settingsModal.responseCodes[status];
         if (status === 200) {
-            setMessage(`${message} "${uiComponents.changeNameInput.value}"`, 'success');
+            setMessage(constants.uiComponents.settingsMessageBlock, `${message} "${constants.uiComponents.changeNameInput.value}"`, 'success');
         } else {
-            setMessage(message, 'error');
+            setMessage(constants.uiComponents.settingsMessageBlock, message, 'error');
         }
     }
 
     function checkSettingsInput(inputValue) {
         let checkResult = true;
         if (!inputValue) {
-            setMessage(settingModalMessages.emptyNameInput, 'error');
+            setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.emptyNameInput, 'error');
             checkResult = false;
         }
         if (inputValue.length === 1) {
-            setMessage(settingModalMessages.nameTooShort, 'error');
+            setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.nameTooShort, 'error');
             checkResult = false;
         }
         if (inputValue.length >= 25) {
-            setMessage(settingModalMessages.nameTooLong, 'error');
+            setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.nameTooLong, 'error');
             checkResult = false;
         }
         return checkResult;
@@ -62,17 +48,16 @@ export function settingsDialogComponent() {
 
     async function changeName() {
         try {
-            if (!checkSettingsInput(uiComponents.changeNameInput.value)) {
+            if (!checkSettingsInput(constants.uiComponents.changeNameInput.value)) {
                 return;
             }
-            setMessage(settingModalMessages.nameChanging, 'info');
-            const cookie = getCookie();
-            const token = cookie.token;
-            const endpoint = 'https://edu.strada.one/api/user';
-            const response = await fetch(endpoint, {
+            setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.nameChanging, 'info');
+            const userUrl = constants.endpoints.userUrl;
+            const token = getToken();
+            const response = await fetch(userUrl, {
                 method: 'PATCH',
                 body: JSON.stringify({
-                    name: uiComponents.changeNameInput.value
+                    name: constants.uiComponents.changeNameInput.value
                 }),
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
@@ -84,9 +69,9 @@ export function settingsDialogComponent() {
             return await response.json();
         } catch(err) {
             console.error(err);
-            setMessage(settingModalMessages.serverError, 'error');
+            setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.serverError, 'error');
         } finally {
-            uiComponents.changeNameForm.reset();
+            constants.uiComponents.changeNameForm.reset();
         }
         
     }
@@ -102,5 +87,5 @@ export function settingsDialogComponent() {
             console.error(err);
         }
     }
-    uiComponents.changeNameForm.addEventListener('submit', getChangedName);
+    constants.uiComponents.changeNameForm.addEventListener('submit', getChangedName);
 }

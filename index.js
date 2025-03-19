@@ -1,18 +1,17 @@
 import { authDialogComponent } from "./auth-dialog.js";
-import { getCookie } from "./utils.js";
+import { getToken } from "./utils.js";
 import { closeDialogWindow } from "./dialog.js";
-import { uiComponents } from "./ui-components.js";
+import { constants } from "./constants.js";
 import { showChatWithMessages } from "./chat-render.js";
 
 function isTokenCookieValid() {
-    const cookie = getCookie();
-    const cookieToken = cookie.token;
-    if (!cookieToken) {
+    const token = getToken();
+    if (!token) {
         authDialogComponent();
     } else {
-        closeDialogWindow(uiComponents.authDialog);
+        closeDialogWindow(constants.uiComponents.authDialog);
         showChatWithMessages();
     }
-    return cookieToken;
+    return token;
 }
 isTokenCookieValid();

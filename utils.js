@@ -19,3 +19,19 @@ export function getCookie() {
         return acc;
     }, {});
 }
+
+export function getToken() {
+    const cookie = getCookie();
+    const token = cookie.token;
+    return token;
+}
+
+export function clearMessages(messageBlock) {
+    messageBlock.classList.remove('success', 'error', 'info', 'text-center');
+}
+
+export function setMessage(messageBlock, message, type) {
+    clearMessages(messageBlock);
+    messageBlock.textContent = message;
+    messageBlock.classList.add(type);
+}

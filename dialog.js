@@ -1,8 +1,8 @@
-import { uiComponents } from "./ui-components.js";
+import { constants } from "./constants.js";
 
 export function openDialogWindow(dialogName) {
     dialogName.showModal();
-    uiComponents.body.classList.add('scrollLock');
+    constants.uiComponents.body.classList.add('scrollLock');
 }
 
 export function closeDialogWindow(dialogName) {
@@ -11,7 +11,7 @@ export function closeDialogWindow(dialogName) {
 }
 
 export function clickCloseDialog(dialogName) {
-    uiComponents.closeDialogBtns.forEach(closeBtn => {
+    constants.uiComponents.closeDialogBtns.forEach(closeBtn => {
         closeBtn.addEventListener('click', () => {
             closeDialogWindow(dialogName);
         })
@@ -19,7 +19,7 @@ export function clickCloseDialog(dialogName) {
 }
 
 function returnScroll() {
-    uiComponents.body.classList.remove('scrollLock');
+    constants.uiComponents.body.classList.remove('scrollLock');
 }
 
 export function closeDialogOnBackDrop(e) {

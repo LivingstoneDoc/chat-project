@@ -1,67 +1,41 @@
-import { uiComponents } from "./ui-components.js";
+import { constants } from "./constants.js";
 import { openDialogWindow, preventEscapeBtn } from "./dialog.js";
 import { confirmDialogComponent } from "./confirm-dialog.js";
-
-const authModalMessages = {
-    emptyInputValue: 'Пожалуйста, введите Email',
-    codeSending: 'Отправка кода...',
-    sentSuccessfully: 'Код успешно отправлен на почту:',
-    spamFolder: 'Не забудьте проверить папку спам',
-    incorrentEmail: 'Email указан неверно',
-    notFoundEmail: 'Email не найден',
-    serverError: 'Внутренняя ошибка сервера'
-};
-
-const responseCodes = {
-    200: authModalMessages.sentSuccessfully,
-    400: authModalMessages.incorrentEmail,
-    404: authModalMessages.notFoundEmail,
-    500: authModalMessages.serverError
-};
+import { setMessage } from "./utils.js";
 
 export function authDialogComponent() {
-    openDialogWindow(uiComponents.authDialog);
-    uiComponents.authDialog.addEventListener('keydown', preventEscapeBtn);
-
-    function setMessage(message, type) {
-        clearInfoMessages();
-        uiComponents.authMessageBlock.textContent = message;
-        uiComponents.authMessageBlock.classList.add(type);
-    }
+    openDialogWindow(constants.uiComponents.authDialog);
+    constants.uiComponents.authDialog.addEventListener('keydown', preventEscapeBtn);
     
     function checkResponseStatus(status) {
-        const message = responseCodes[status];
+        const message = constants.authModal.responseCodes[status];
         if (status === 200) {
-            setMessage(`${message} "${uiComponents.emailInput.value}". ${authModalMessages.spamFolder}`, 'success');
+            setMessage(constants.uiComponents.authMessageBlock, `${message} "${constants.uiComponents.emailInput.value}". ${constants.authModal.messages.spamFolder}`, 'success');
         } else {
-            setMessage(message, 'error');
+            setMessage(constants.uiComponents.authMessageBlock, message, 'error');
         }
     }
     
     function checkInputValue(inputValue) {
         let checkResult = true;
         if (!inputValue) {
-            setMessage(authModalMessages.emptyInputValue, 'error');
+            setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.emptyInputValue, 'error');
             checkResult = false;
         }
         return checkResult;
     }
     
-    function clearInfoMessages() {
-        uiComponents.authMessageBlock.classList.remove('success', 'error', 'info');
-    }
-    
     async function sendEmail() {
         try {
-            if (!checkInputValue(uiComponents.emailInput.value)) {
+            if (!checkInputValue(constants.uiComponents.emailInput.value)) {
                 return;
             }
-            setMessage(authModalMessages.codeSending, 'info');
-            const endpoint = 'https://edu.strada.one/api/user';
-            const response = await fetch(endpoint, {
+            setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.codeSending, 'info');
+            const userUrl = constants.endpoints.userUrl;
+            const response = await fetch(userUrl, {
             method: 'POST',
             body: JSON.stringify({
-                email: uiComponents.emailInput.value
+                email: constants.uiComponents.emailInput.value
             }),
             headers: {
                 'Content-type': 'application/json; charset=UTF-8'
@@ -72,9 +46,9 @@ export function authDialogComponent() {
         return await response.json();
         } catch(err) {
             console.error(err);
-            setMessage(authModalMessages.serverError, 'error');
+            setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.serverError, 'error');
         } finally {
-            uiComponents.emailInput.value = '';
+            constants.uiComponents.emailInput.value = '';
         }
     }
     
@@ -88,7 +62,7 @@ export function authDialogComponent() {
             console.error(err);
         }
     }
-    uiComponents.getCodeBtn.addEventListener('click', getCode);
+    constants.uiComponents.getCodeBtn.addEventListener('click', getCode);
     
     confirmDialogComponent();
 }
