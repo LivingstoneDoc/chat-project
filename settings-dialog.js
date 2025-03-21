@@ -11,20 +11,20 @@ export function settingsDialogComponent() {
     clickCloseDialog(constants.uiComponents.settingsDialog);
     constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    async function getUserName() {
-        const userData = await getUserResponse();
-        console.log('userData', userData);
-        const userName = userData.name;
-        console.log('userName', userName);
-        return userName;
-    }
+    // async function getUserData() {
+    //     try {
+    //         const userData = await getUserResponse();
+    //         console.log('userData', userData);
+    //         return userName;
+    //     } catch(err) {
+    //         console.error(err);
+    //     }
+    // }
+    // getUserData();
 
-    async function checkResponseStatus(status) {
+    function checkResponseStatus(status) {
         let message = constants.settingsModal.responseCodes[status];
-        const userName = await getUserName();
-        if (status === 200) {
-            setMessage(constants.uiComponents.settingsMessageBlock, `${message} "${userName}"`, 'success');
-        } else {
+        if (status !== 200) {
             setMessage(constants.uiComponents.settingsMessageBlock, message, 'error');
         }
     }
@@ -80,6 +80,8 @@ export function settingsDialogComponent() {
         try {
             e.preventDefault();
             const data = await changeName();
+            const newUserName = data.name;
+            setMessage(constants.uiComponents.settingsMessageBlock, `${constants.settingsModal.messages.nameChangeSuccessfully} "${newUserName}"`, 'success');
             //console.log('data', data);
             //console.log('data name', data.name);
             return data;
