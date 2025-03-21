@@ -61,7 +61,8 @@ export const constants = {
         enterCodeBtn: document.querySelector('.enter-code-btn'),
         confirmInput: document.querySelector('.confirm-input'),
         confirmForm: document.querySelector('.confirm-form'),
-        chat: document.querySelector('.chat')
+        chat: document.querySelector('.chat'),
+        userInfoBlock: document.querySelector('.user-info-block')
     },
     endpoints: {
         messagesUrl: `${baseUrl}/messages`,
@@ -77,5 +78,9 @@ export const constants = {
     },
     confirmMessages: {
         emptyConfirmInput: 'Пожалуйста, введите код подтверждения'
+    },
+    userInfoMessages: {
+        getUserInfo: 'Вы авторизовались как:',
+        userInfoError: 'Во время получения данных пользователя возникла ошибка'
     }
 };

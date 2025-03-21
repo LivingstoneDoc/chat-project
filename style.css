@@ -25,6 +25,7 @@ body {
 }
 
 .container {
+  position: relative;
   display: flex;
   margin: 0 auto;
   width: 1144px;
@@ -258,7 +259,7 @@ body {
   color: #000000;
 }
 
-.hide-chat {
+.hide-content {
   display: none;
 }
 
@@ -266,4 +267,23 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+.user-info-block {
+  position: absolute;
+  color: #FFFFFF;
+  background-color: #ff0000;
+  min-width: 320px;
+  padding: 10px;
+  margin-top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.user-info-block.success {
+  background-color: #32CD32;
+}
+
+.user-info-block.error {
+  background-color: #B22222;
 }

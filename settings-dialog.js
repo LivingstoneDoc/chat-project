@@ -1,6 +1,7 @@
 import { constants } from "./constants.js";
 import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
 import { setMessage, getToken } from "./utils.js";
+import { getUserResponse } from "./user-info.js";
 
 export function settingsDialogComponent() {
 
@@ -10,20 +11,19 @@ export function settingsDialogComponent() {
     clickCloseDialog(constants.uiComponents.settingsDialog);
     constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    // function clearInfoMessages() {
-    //     constants.uiComponents.settingsMessageBlock.classList.remove('success', 'error', 'info');
-    // }
+    async function getUserName() {
+        const userData = await getUserResponse();
+        console.log('userData', userData);
+        const userName = userData.name;
+        console.log('userName', userName);
+        return userName;
+    }
 
-    // function setMessage(message, type) {
-    //     clearInfoMessages();
-    //     constants.uiComponents.settingsMessageBlock.textContent = message;
-    //     constants.uiComponents.settingsMessageBlock.classList.add(type);
-    // }
-
-    function checkResponseStatus(status) {
+    async function checkResponseStatus(status) {
         let message = constants.settingsModal.responseCodes[status];
+        const userName = await getUserName();
         if (status === 200) {
-            setMessage(constants.uiComponents.settingsMessageBlock, `${message} "${constants.uiComponents.changeNameInput.value}"`, 'success');
+            setMessage(constants.uiComponents.settingsMessageBlock, `${message} "${userName}"`, 'success');
         } else {
             setMessage(constants.uiComponents.settingsMessageBlock, message, 'error');
         }

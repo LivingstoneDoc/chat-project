@@ -101,6 +101,6 @@ async function getMessagesData() {
 }
 
 export function showChatWithMessages() {
-    constants.uiComponents.chat.classList.remove('hide-chat');
+    constants.uiComponents.chat.classList.remove('hide-content');
     getMessagesData();
 }

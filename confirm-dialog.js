@@ -1,7 +1,8 @@
 import { constants } from "./constants.js";
 import { openDialogWindow, closeDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
-import { setCookie, getToken } from "./utils.js";
+import { setCookie, setMessage, removeMessage } from "./utils.js";
 import { showChatWithMessages } from "./chat-render.js";
+import { getUserResponse } from "./user-info.js";
 
 export function confirmDialogComponent() {
     constants.uiComponents.enterCodeBtn.addEventListener('click', (e) => {
@@ -20,6 +21,20 @@ export function confirmDialogComponent() {
         return true;
     }
 
+    async function showAuthorizedUserMessage() {
+        try {
+            const userData = await getUserResponse();
+            const userName = userData.name;
+            setMessage(constants.uiComponents.userInfoBlock, `${constants.userInfoMessages.getUserInfo} ${userName}`, 'success');
+        } catch(err) {
+            console.error(err);
+            setMessage(constants.uiComponents.userInfoBlock, constants.userInfoMessages.userInfoError, 'error');
+        } finally {
+            constants.uiComponents.userInfoBlock.classList.remove('hide-content');
+            removeMessage(constants.uiComponents.userInfoBlock);
+        }
+    }
+
     function enterChat(e) {
         try {
             e.preventDefault();
@@ -32,7 +47,7 @@ export function confirmDialogComponent() {
             closeDialogWindow(constants.uiComponents.confirmDialog);
             closeDialogWindow(constants.uiComponents.authDialog);
             showChatWithMessages();
-            getUser();
+            showAuthorizedUserMessage();
         } catch(err) {
             console.error(err);
         } finally {
@@ -40,22 +55,4 @@ export function confirmDialogComponent() {
         }
     }
     constants.uiComponents.confirmForm.addEventListener('submit', enterChat);
-
-    async function getInfo() {
-        const meInfoUrl = constants.endpoints.meInfoUrl;
-        const token = getToken();
-        const response = await fetch(meInfoUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        //console.log('response', response);
-        return await response.json();
-    }
-    
-    async function getUser() {
-        const userData = await getInfo();
-        console.log('userData', userData);
-    }
 }

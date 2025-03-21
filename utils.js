@@ -35,3 +35,7 @@ export function setMessage(messageBlock, message, type) {
     messageBlock.textContent = message;
     messageBlock.classList.add(type);
 }
+
+export function removeMessage(messageBlock) {
+    setTimeout(() => messageBlock.classList.add('hide-content'), 3000);
+}
