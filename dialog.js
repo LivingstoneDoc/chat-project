@@ -1,4 +1,5 @@
 import { constants } from "./constants.js";
+import { removeMessage } from "./utils.js";
 
 export function openDialogWindow(dialogName) {
     dialogName.showModal();
@@ -10,10 +11,11 @@ export function closeDialogWindow(dialogName) {
     returnScroll();
 }
 
-export function clickCloseDialog(dialogName) {
+export function clickCloseDialog(dialogName, messageBlock) {
     constants.uiComponents.closeDialogBtns.forEach(closeBtn => {
         closeBtn.addEventListener('click', () => {
             closeDialogWindow(dialogName);
+            removeMessage(messageBlock);
         })
     })
 }

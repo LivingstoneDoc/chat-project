@@ -9,7 +9,7 @@ export function confirmDialogComponent() {
         e.preventDefault();
         openDialogWindow(constants.uiComponents.confirmDialog);
     });
-    clickCloseDialog(constants.uiComponents.confirmDialog);
+    clickCloseDialog(constants.uiComponents.confirmDialog, constants.uiComponents.confirmMessageBlock);
     constants.uiComponents.confirmDialog.addEventListener('click', closeDialogOnBackDrop);
 
     function checkConfirmInput() {
@@ -30,7 +30,7 @@ export function confirmDialogComponent() {
             setMessage(constants.uiComponents.userInfoBlock, constants.userInfoMessages.userInfoError, 'error');
         } finally {
             constants.uiComponents.userInfoBlock.classList.remove('hide-content');
-            removeMessage(constants.uiComponents.userInfoBlock);
+            setTimeout(() => removeMessage(constants.uiComponents.userInfoBlock), 3000);
         }
     }
 

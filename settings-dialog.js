@@ -9,7 +9,7 @@ export function settingsDialogComponent() {
         openDialogWindow(constants.uiComponents.settingsDialog);
         // getUserData();
     });
-    clickCloseDialog(constants.uiComponents.settingsDialog);
+    clickCloseDialog(constants.uiComponents.settingsDialog, constants.uiComponents.settingsMessageBlock);
     constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
     async function getUserData() {
