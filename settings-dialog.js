@@ -1,26 +1,26 @@
 import { constants } from "./constants.js";
 import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
-import { setMessage, getToken } from "./utils.js";
+import { setMessage, getToken, removeMessage } from "./utils.js";
 import { getUserResponse } from "./user-info.js";
 
 export function settingsDialogComponent() {
 
     constants.uiComponents.settingsBtn.addEventListener('click', () => {
         openDialogWindow(constants.uiComponents.settingsDialog);
+        // getUserData();
     });
     clickCloseDialog(constants.uiComponents.settingsDialog);
     constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    // async function getUserData() {
-    //     try {
-    //         const userData = await getUserResponse();
-    //         console.log('userData', userData);
-    //         return userName;
-    //     } catch(err) {
-    //         console.error(err);
-    //     }
-    // }
-    // getUserData();
+    async function getUserData() {
+        try {
+            const userData = await getUserResponse();
+            console.log('userData', userData);
+            return userData;
+        } catch(err) {
+            console.error(err);
+        }
+    }
 
     function checkResponseStatus(status) {
         let message = constants.settingsModal.responseCodes[status];

@@ -14,8 +14,7 @@ export function confirmDialogComponent() {
 
     function checkConfirmInput() {
         if (!constants.uiComponents.confirmInput.value) {
-            constants.uiComponents.confirmMessageBlock.textContent = constants.confirmMessages.emptyConfirmInput;
-            constants.uiComponents.confirmMessageBlock.classList.add('error');
+            setMessage(constants.uiComponents.confirmMessageBlock, constants.confirmMessages.emptyConfirmInput, 'error');
             return false;
         }
         return true;
