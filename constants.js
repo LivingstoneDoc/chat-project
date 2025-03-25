@@ -80,7 +80,7 @@ export const constants = {
         emptyConfirmInput: 'Пожалуйста, введите код подтверждения'
     },
     userInfoMessages: {
-        getUserInfo: 'Вы авторизовались как:',
+        getUserInfo: 'Вы успешно авторизованы',
         userInfoError: 'Во время получения данных пользователя возникла ошибка'
     }
 };

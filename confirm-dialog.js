@@ -27,7 +27,7 @@ export function confirmDialogComponent() {
             setMessage(constants.uiComponents.userInfoBlock, `${constants.userInfoMessages.getUserInfo} ${userName}`, 'success');
         } catch(err) {
             console.error(err);
-            setMessage(constants.uiComponents.userInfoBlock, constants.userInfoMessages.userInfoError, 'error');
+            setMessage(constants.uiComponents.userInfoBlock, `${constants.userInfoMessages.getUserInfo}`, 'success');
         } finally {
             constants.uiComponents.userInfoBlock.classList.remove('hide-content');
             setTimeout(() => removeMessage(constants.uiComponents.userInfoBlock), 3000);
