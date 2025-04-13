@@ -1,7 +1,7 @@
 import { constants } from "./constants.js";
 import { openDialogWindow, preventEscapeBtn } from "./dialog.js";
 import { confirmDialogComponent } from "./confirm-dialog.js";
-import { setMessage } from "./utils.js";
+import { setMessage, setCookie } from "./utils.js";
 
 export function authDialogComponent() {
     openDialogWindow(constants.uiComponents.authDialog);
@@ -43,6 +43,8 @@ export function authDialogComponent() {
         });
         //console.log('response', response);
         checkResponseStatus(response.status);
+        const emailCookie = `email=${constants.uiComponents.emailInput.value};samesite=lax;max-age=${constants.tokenLifeTime}`
+        setCookie(emailCookie);
         return await response.json();
         } catch(err) {
             console.error(err);

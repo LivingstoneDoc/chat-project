@@ -26,6 +26,12 @@ export function getToken() {
     return token;
 }
 
+export function getEmail() {
+    const cookie = getCookie();
+    const email = cookie.email;
+    return email;
+}
+
 export function clearMessages(messageBlock) {
     messageBlock.classList.remove('success', 'error', 'info', 'text-center');
 }

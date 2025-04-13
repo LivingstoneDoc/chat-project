@@ -68,6 +68,7 @@ export const constants = {
         messagesUrl: `${baseUrl}/messages`,
         userUrl: `${baseUrl}/user`,
         meInfoUrl: `${baseUrl}/user/me`,
+        webSocketUrl: 'wss://edu.strada.one/websockets?'
     },
     authModal,
     settingsModal,

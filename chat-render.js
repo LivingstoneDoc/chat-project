@@ -1,9 +1,11 @@
 import { constants } from "./constants.js";
 import { getMessageTime } from "./utils.js";
 import { messageAuthor } from "./db.js";
-import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus, checkMessageAuthor } from "./chat-logic.js";
+import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus } from "./chat-logic.js";
 import { settingsDialogComponent } from "./settings-dialog.js";
-import { getToken } from "./utils.js";
+import { getToken, getEmail } from "./utils.js";
+
+let socket = null;
 
 function clearMessages() {
     constants.uiComponents.messagesWrapper.classList.remove('success', 'error', 'info', 'text-center');
@@ -29,27 +31,74 @@ function checkMessagesList(messagesList) {
 
 settingsDialogComponent();
 
-// function sendMessage(e) {
-//     e.preventDefault();
-//     const currentTime = new Date();
-//     const timeMessage = getMessageTime(currentTime);
-//     const isMessageEmpty = constants.uiComponents.messageInput.value.trim() === '';
-//     if (isMessageEmpty) {
-//         return;
-//     }
-//     const freshMessage = addMessageTomessagesDB(messageAuthor.me, constants.uiComponents.messageInput.value, timeMessage, false);
-//     renderMessages(freshMessage);
-//     constants.uiComponents.sendMessageForm.reset();
-//     return freshMessage;
-// }
-// constants.uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
+function initializationWebSocket() {
+    const token = getToken();
+    try {
+        socket = new WebSocket(`${constants.endpoints.webSocketUrl}${token}`);
+    
+        // socket.addEventListener('open', (event) => {
+        //     console.log(`Connection is open. State: ${socket.readyState}`);
+        // });
+    
+        socket.addEventListener('message', (event) => {
+            try {
+                getNewMessage(JSON.parse(event.data));
+            } catch(error) {
+                console.error('Error parsing message', error);
+            }
+        });
+    
+        socket.addEventListener('error', (error) => {
+            console.error(error);
+        });
+    
+        socket.addEventListener('close', (event) => {
+            // console.log(`Connection is close. State: ${socket.readyState}`);
+            setTimeout(() => initializationWebSocket(), 3000);
+        });
+    } catch(error) {
+        console.error(error);
+        setTimeout(() => initializationWebSocket(), 3000);
+    }
+}
+
+function checkMessageAuthor(userEmail, messageItem) {
+    const email = getEmail();
+    if (email === userEmail) {
+        messageItem.classList.add('my-message');
+    }
+}
+
+function sendMessage(event) {
+    event.preventDefault();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error('WebSocket is not connected');
+        return;
+    }
+    const newMessage = constants.uiComponents.messageInput.value.trim();
+    if (newMessage) {
+        try {
+            socket.send(JSON.stringify({text: newMessage}));
+            constants.uiComponents.sendMessageForm.reset();
+        } catch(error) {
+            console.error('Error sending message', error);
+        }
+    }
+}
+constants.uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
+
+function getNewMessage(messageData) {
+    const message = getMessageTemplate(messageData);
+    constants.uiComponents.messagesWrapper.prepend(message);
+    constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+}
 
 function getMessageTemplate(data) {
     const message = document.createElement('div');
-    message.classList.add('message');
-    checkDeliveredMessage(data.isDelivered, message);
-    changeMessageStatus(data, message);
-    checkMessageAuthor(data.mailer, message);
+    message.classList.add('message', 'delivered-message');
+    // checkDeliveredMessage(data.isDelivered, message);
+    // changeMessageStatus(data, message);
+    checkMessageAuthor(data.user.email, message);
     const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true);
     messageContent.querySelector('.mailer').textContent = `${data.user.name}:`;
     messageContent.querySelector('.text-message').textContent = data.text;
@@ -64,9 +113,9 @@ export function renderMessages(data) {
     clearMessages();
     checkMessagesList(data);
     const messagesFragment = document.createDocumentFragment();
-    data.map(dataItem => {
+    data.forEach(dataItem => {
         const message = getMessageTemplate(dataItem);
-        messagesFragment.prepend(message);
+        messagesFragment.append(message);
     });
     return constants.uiComponents.messagesWrapper.append(messagesFragment);
 }
@@ -103,4 +152,5 @@ async function getMessagesData() {
 export function showChatWithMessages() {
     constants.uiComponents.chat.classList.remove('hide-content');
     getMessagesData();
+    initializationWebSocket();
 }
