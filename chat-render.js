@@ -65,7 +65,11 @@ function initializationWebSocket() {
 function checkMessageAuthor(userEmail, messageItem) {
     const email = getEmail();
     if (email === userEmail) {
-        messageItem.classList.add('my-message');
+        messageItem.classList.add('my-message', 'sent-message');
+        setTimeout(() => {
+            messageItem.classList.remove('sent-message');
+            messageItem.classList.add('delivered-message');
+        }, 1000);
     }
 }
 
@@ -95,9 +99,9 @@ function getNewMessage(messageData) {
 
 function getMessageTemplate(data) {
     const message = document.createElement('div');
-    message.classList.add('message', 'delivered-message');
     // checkDeliveredMessage(data.isDelivered, message);
     // changeMessageStatus(data, message);
+    message.classList.add('message');
     checkMessageAuthor(data.user.email, message);
     const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true);
     messageContent.querySelector('.mailer').textContent = `${data.user.name}:`;
@@ -115,6 +119,7 @@ export function renderMessages(data) {
     const messagesFragment = document.createDocumentFragment();
     data.forEach(dataItem => {
         const message = getMessageTemplate(dataItem);
+        message.classList.add('delivered-message');
         messagesFragment.append(message);
     });
     return constants.uiComponents.messagesWrapper.append(messagesFragment);
