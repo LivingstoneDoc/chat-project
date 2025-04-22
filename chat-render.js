@@ -6,6 +6,9 @@ import { settingsDialogComponent } from "./settings-dialog.js";
 import { getToken, getEmail } from "./utils.js";
 
 let socket = null;
+let isLoading = false;
+let currentChunk = 0;
+let endHistoryMessageShown = false;
 
 function clearMessages() {
     constants.uiComponents.messagesWrapper.classList.remove('success', 'error', 'info', 'text-center');
@@ -62,9 +65,15 @@ function initializationWebSocket() {
     }
 }
 
-function checkMessageAuthor(userEmail, messageItem) {
-    const email = getEmail();
-    if (email === userEmail) {
+function checkUserEmail(userEmail) {
+    const emailCookie = getEmail();
+    if (emailCookie === userEmail) {
+        return true;
+    }
+}
+
+function getUserMessagesWithDelay(userEmail, messageItem) {
+    if (checkUserEmail(userEmail)) {
         messageItem.classList.add('my-message', 'sent-message');
         setTimeout(() => {
             messageItem.classList.remove('sent-message');
@@ -93,8 +102,10 @@ constants.uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
 
 function getNewMessage(messageData) {
     const message = getMessageTemplate(messageData);
-    constants.uiComponents.messagesWrapper.prepend(message);
-    constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+    constants.uiComponents.messagesWrapper.append(message);
+    if (checkUserEmail(messageData.user.email)) {
+        constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+    }
 }
 
 function getMessageTemplate(data) {
@@ -102,7 +113,7 @@ function getMessageTemplate(data) {
     // checkDeliveredMessage(data.isDelivered, message);
     // changeMessageStatus(data, message);
     message.classList.add('message');
-    checkMessageAuthor(data.user.email, message);
+    getUserMessagesWithDelay(data.user.email, message);
     const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true);
     messageContent.querySelector('.mailer').textContent = `${data.user.name}:`;
     messageContent.querySelector('.text-message').textContent = data.text;
@@ -113,16 +124,61 @@ function getMessageTemplate(data) {
 }
 
 export function renderMessages(data) {
+    const chunkSize = 20;
+    const messagesChunks = [];
     constants.uiComponents.messagesWrapper.innerHTML = '';
     clearMessages();
     checkMessagesList(data);
+    const dataCopy = [...data];
+    for (let i = 0; i < dataCopy.length; i += chunkSize) {
+        const reversedChunk = dataCopy.slice(i, i + chunkSize).reverse();
+        messagesChunks.push(reversedChunk);
+    }
+    
+    displayMessageChunk(messagesChunks[currentChunk]);
+
+    constants.uiComponents.messagesWrapper.addEventListener('scroll', () => {
+        const needShowMoreMessages = constants.uiComponents.messagesWrapper.scrollTop === 0 && !isLoading && currentChunk < messagesChunks.length - 1;
+        if (needShowMoreMessages) {
+            loadMoreMessages(messagesChunks);
+        }
+        const isTheEndOfHistory = constants.uiComponents.messagesWrapper.scrollTop === 0 && !isLoading && currentChunk === messagesChunks.length - 1 && !endHistoryMessageShown;
+        if (isTheEndOfHistory) {
+            createEndHistoryMessage();
+        }
+    })
+}
+
+function displayMessageChunk(chunk) {
     const messagesFragment = document.createDocumentFragment();
-    data.forEach(dataItem => {
-        const message = getMessageTemplate(dataItem);
+    chunk.forEach(item => {
+        const message = getMessageTemplate(item);
         message.classList.add('delivered-message');
         messagesFragment.append(message);
-    });
-    return constants.uiComponents.messagesWrapper.append(messagesFragment);
+    })
+    if (currentChunk > 0) {
+        constants.uiComponents.messagesWrapper.prepend(messagesFragment);
+        const firstMessage = constants.uiComponents.messagesWrapper.firstChild;
+        constants.uiComponents.messagesWrapper.scrollTop = firstMessage.offsetHeight * chunk.length;
+    } else {
+        constants.uiComponents.messagesWrapper.append(messagesFragment);
+        constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+    }
+}
+
+function loadMoreMessages(messagesChunks) {
+    isLoading = true;
+    currentChunk++;
+    displayMessageChunk(messagesChunks[currentChunk]);
+    isLoading = false;
+}
+
+function createEndHistoryMessage() {
+    const endHistoryMessage = document.createElement('div');
+    endHistoryMessage.classList.add('chat-history-message');
+    endHistoryMessage.textContent = 'Вся история загружена';
+    constants.uiComponents.messagesWrapper.prepend(endHistoryMessage);
+    endHistoryMessageShown = true;
 }
 
 async function getMessagesResponse() {
