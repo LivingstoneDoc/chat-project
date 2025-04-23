@@ -1,21 +1,14 @@
 import { constants } from "./constants.js";
 import { getMessageTime } from "./utils.js";
-import { messageAuthor } from "./db.js";
-import { addMessageTomessagesDB, checkDeliveredMessage, changeMessageStatus } from "./chat-logic.js";
 import { settingsDialogComponent } from "./settings-dialog.js";
-import { getToken, getEmail } from "./utils.js";
+import { getToken, getEmail, clearMessages } from "./utils.js";
 
 let socket = null;
-let isLoading = false;
 let currentChunk = 0;
 let endHistoryMessageShown = false;
 
-function clearMessages() {
-    constants.uiComponents.messagesWrapper.classList.remove('success', 'error', 'info', 'text-center');
-}
-
 function setMessage(message, type) {
-    clearMessages();
+    clearMessages(constants.uiComponents.messagesWrapper);
     constants.uiComponents.messagesWrapper.textContent = message;
     constants.uiComponents.messagesWrapper.classList.add(type);
 }
@@ -39,10 +32,6 @@ function initializationWebSocket() {
     try {
         socket = new WebSocket(`${constants.endpoints.webSocketUrl}${token}`);
     
-        // socket.addEventListener('open', (event) => {
-        //     console.log(`Connection is open. State: ${socket.readyState}`);
-        // });
-    
         socket.addEventListener('message', (event) => {
             try {
                 getNewMessage(JSON.parse(event.data));
@@ -56,7 +45,6 @@ function initializationWebSocket() {
         });
     
         socket.addEventListener('close', (event) => {
-            // console.log(`Connection is close. State: ${socket.readyState}`);
             setTimeout(() => initializationWebSocket(), 3000);
         });
     } catch(error) {
@@ -108,48 +96,45 @@ function getNewMessage(messageData) {
     }
 }
 
-function getMessageTemplate(data) {
+function getMessageTemplate(messageData) {
     const message = document.createElement('div');
-    // checkDeliveredMessage(data.isDelivered, message);
-    // changeMessageStatus(data, message);
     message.classList.add('message');
-    getUserMessagesWithDelay(data.user.email, message);
+    getUserMessagesWithDelay(messageData.user.email, message);
     const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true);
-    messageContent.querySelector('.mailer').textContent = `${data.user.name}:`;
-    messageContent.querySelector('.text-message').textContent = data.text;
-    const messageTime = getMessageTime(data.createdAt);
+    messageContent.querySelector('.mailer').textContent = `${messageData.user.name}:`;
+    messageContent.querySelector('.text-message').textContent = messageData.text;
+    const messageTime = getMessageTime(messageData.createdAt);
     messageContent.querySelector('.time-message').textContent = messageTime;
     message.append(messageContent);
     return message;
 }
 
-export function renderMessages(data) {
-    const chunkSize = 20;
+export function renderMessages(messagesList) {
     const messagesChunks = [];
     constants.uiComponents.messagesWrapper.innerHTML = '';
-    clearMessages();
-    checkMessagesList(data);
-    const dataCopy = [...data];
-    for (let i = 0; i < dataCopy.length; i += chunkSize) {
-        const reversedChunk = dataCopy.slice(i, i + chunkSize).reverse();
-        messagesChunks.push(reversedChunk);
-    }
+    clearMessages(constants.uiComponents.messagesWrapper);
+    checkMessagesList(messagesList);
     
-    displayMessageChunk(messagesChunks[currentChunk]);
+    convertMessagesListToChunks(messagesList, messagesChunks);
+    
+    displayMessagesChunk(messagesChunks[currentChunk]);
 
     constants.uiComponents.messagesWrapper.addEventListener('scroll', () => {
-        const needShowMoreMessages = constants.uiComponents.messagesWrapper.scrollTop === 0 && !isLoading && currentChunk < messagesChunks.length - 1;
-        if (needShowMoreMessages) {
-            loadMoreMessages(messagesChunks);
-        }
-        const isTheEndOfHistory = constants.uiComponents.messagesWrapper.scrollTop === 0 && !isLoading && currentChunk === messagesChunks.length - 1 && !endHistoryMessageShown;
-        if (isTheEndOfHistory) {
-            createEndHistoryMessage();
-        }
-    })
+        handleScroll(messagesChunks);
+    });
 }
 
-function displayMessageChunk(chunk) {
+function convertMessagesListToChunks(messagesList, chunksArr) {
+    const messagesListCopy = [...messagesList];
+    const chunkSize = 20;
+    for (let i = 0; i < messagesListCopy.length; i += chunkSize) {
+        const reversedMessagesInChunk = messagesListCopy.slice(i, i + chunkSize).reverse();
+        chunksArr.push(reversedMessagesInChunk);
+    }
+    return chunksArr;
+}
+
+function displayMessagesChunk(chunk) {
     const messagesFragment = document.createDocumentFragment();
     chunk.forEach(item => {
         const message = getMessageTemplate(item);
@@ -167,10 +152,19 @@ function displayMessageChunk(chunk) {
 }
 
 function loadMoreMessages(messagesChunks) {
-    isLoading = true;
     currentChunk++;
-    displayMessageChunk(messagesChunks[currentChunk]);
-    isLoading = false;
+    displayMessagesChunk(messagesChunks[currentChunk]);
+}
+
+function handleScroll(chunksArr) {
+    const needShowMoreMessages = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk < chunksArr.length - 1;
+    if (needShowMoreMessages) {
+        loadMoreMessages(chunksArr);
+    }
+    const isTheEndOfHistory = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk === chunksArr.length - 1 && !endHistoryMessageShown;
+    if (isTheEndOfHistory) {
+        createEndHistoryMessage();
+    }
 }
 
 function createEndHistoryMessage() {
