@@ -1,19 +1,25 @@
-import { constants } from "./constants.js";
-import { openDialogWindow, closeDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
-import { setCookie, setMessage, removeMessage } from "./utils.js";
-import { showChatWithMessages } from "./chat-render.js";
-import { getUserResponse } from "./user-info.js";
+import { constants } from "./constants";
+import { openDialogWindow, closeDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog";
+import { setCookie, setMessage, removeMessage, checkUiElement } from "./utils";
+import { showChatWithMessages } from "./chat-render";
+import { getUserResponse } from "./user-info";
 
 export function confirmDialogComponent() {
-    constants.uiComponents.enterCodeBtn.addEventListener('click', (e) => {
+    const enterCodeBtn = checkUiElement(constants.uiComponents.enterCodeBtn);
+    if (!enterCodeBtn) return;
+    enterCodeBtn.addEventListener('click', (e: Event) => {
         e.preventDefault();
         openDialogWindow(constants.uiComponents.confirmDialog);
     });
     clickCloseDialog(constants.uiComponents.confirmDialog, constants.uiComponents.confirmMessageBlock);
-    constants.uiComponents.confirmDialog.addEventListener('click', closeDialogOnBackDrop);
+    const confirmDialog = checkUiElement(constants.uiComponents.confirmDialog);
+    if (!confirmDialog) return;
+    confirmDialog.addEventListener('click', closeDialogOnBackDrop);
 
-    function checkConfirmInput() {
-        if (!constants.uiComponents.confirmInput.value) {
+    function checkConfirmInput() { 
+        const confirmInput = checkUiElement(constants.uiComponents.confirmInput) as HTMLInputElement | null;
+        if (!confirmInput) return;
+        if (!confirmInput.value) {
             setMessage(constants.uiComponents.confirmMessageBlock, constants.confirmMessages.emptyConfirmInput, 'error');
             return false;
         }
@@ -21,6 +27,8 @@ export function confirmDialogComponent() {
     }
 
     async function showAuthorizedUserMessage() {
+        const userInfoBlock = checkUiElement(constants.uiComponents.userInfoBlock);
+        if (!userInfoBlock) return;
         try {
             const userData = await getUserResponse();
             const userName = userData.name;
@@ -29,18 +37,20 @@ export function confirmDialogComponent() {
             console.error(err);
             setMessage(constants.uiComponents.userInfoBlock, `${constants.userInfoMessages.getUserInfo}`, 'success');
         } finally {
-            constants.uiComponents.userInfoBlock.classList.remove('hide-content');
+            userInfoBlock.classList.remove('hide-content');
             setTimeout(() => removeMessage(constants.uiComponents.userInfoBlock), 3000);
         }
     }
 
-    function enterChat(e) {
+    function enterChat(e: Event) {
+        const confirmForm = checkUiElement(constants.uiComponents.userInfoBlock) as HTMLFormElement | null;
+        if (!confirmForm) return;
         try {
             e.preventDefault();
             if (!checkConfirmInput()) {
                 return;
             }
-            const tokenFromForm = constants.uiComponents.confirmInput.value;
+            const tokenFromForm = constants.uiComponents.confirmInput?.value ?? '';
             const tokenCookieString = `token=${tokenFromForm};samesite=lax;max-age=${constants.tokenLifeTime}`;
             setCookie(tokenCookieString);
             closeDialogWindow(constants.uiComponents.confirmDialog);
@@ -50,8 +60,10 @@ export function confirmDialogComponent() {
         } catch(err) {
             console.error(err);
         } finally {
-            constants.uiComponents.confirmForm.reset();
+            confirmForm.reset();
         }
     }
-    constants.uiComponents.confirmForm.addEventListener('submit', enterChat);
+    const confirmForm = checkUiElement(constants.uiComponents.userInfoBlock) as HTMLFormElement | null;
+    if (!confirmForm) return;
+    confirmForm.addEventListener('submit', enterChat);
 }

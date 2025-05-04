@@ -1,6 +1,13 @@
-import { messageAuthor, messagesDB } from "./db.js";
+import { messageAuthor, messagesDB } from "./db";
 
-export function addMessageTomessagesDB(mailer, textMessage, timeMessage, isDelivered) {
+interface messageObj {
+    mailer: string,
+    textMessage: string,
+    timeMessage: string,
+    isDelivered: boolean,
+}
+
+export function addMessageTomessagesDB(mailer: string, textMessage: string, timeMessage: string, isDelivered: boolean) {
     messagesDB.push({
         mailer,
         textMessage,
@@ -10,7 +17,7 @@ export function addMessageTomessagesDB(mailer, textMessage, timeMessage, isDeliv
     return messagesDB;
 }
 
-export function checkMessageAuthor(mailer, messageItem) {
+export function checkMessageAuthor(mailer: string, messageItem: HTMLElement) {
     const isUsersOwnMessage = mailer === messageAuthor.me;
     if (isUsersOwnMessage) {
         messageItem.classList.add('my-message');
@@ -20,7 +27,7 @@ export function checkMessageAuthor(mailer, messageItem) {
     return isUsersOwnMessage;
 }
 
-export function checkDeliveredMessage(isDelivered, messageItem) {
+export function checkDeliveredMessage(isDelivered: string, messageItem: HTMLElement) {
     if (isDelivered) {
         messageItem.classList.add('delivered-message');
     } else {
@@ -29,7 +36,7 @@ export function checkDeliveredMessage(isDelivered, messageItem) {
     return isDelivered;
 }
 
-export function changeMessageStatus(dataItem, messageItem) {
+export function changeMessageStatus(dataItem: messageObj, messageItem: HTMLElement) {
     const isMessageNotDelivered = !dataItem.isDelivered && messageItem.classList.contains('sent-message');
     if (isMessageNotDelivered) {
         setTimeout(() => {

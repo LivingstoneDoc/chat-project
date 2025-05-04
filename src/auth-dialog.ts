@@ -1,22 +1,25 @@
-import { constants } from "./constants.js";
-import { openDialogWindow, preventEscapeBtn } from "./dialog.js";
-import { confirmDialogComponent } from "./confirm-dialog.js";
-import { setMessage, setCookie } from "./utils.js";
+import { constants } from "./constants";
+import { openDialogWindow, preventEscapeBtn } from "./dialog";
+import { confirmDialogComponent } from "./confirm-dialog";
+import { setMessage, setCookie } from "./utils";
 
 export function authDialogComponent() {
     openDialogWindow(constants.uiComponents.authDialog);
-    constants.uiComponents.authDialog.addEventListener('keydown', preventEscapeBtn);
+    constants.uiComponents.authDialog?.addEventListener('keydown', preventEscapeBtn);
     
-    function checkResponseStatus(status) {
+    function checkResponseStatus(status: number) {
         const message = constants.authModal.responseCodes[status];
+        if (!constants.uiComponents.authMessageBlock) {
+            return;
+        }
         if (status === 200) {
-            setMessage(constants.uiComponents.authMessageBlock, `${message} "${constants.uiComponents.emailInput.value}". ${constants.authModal.messages.spamFolder}`, 'success');
+            setMessage(constants.uiComponents.authMessageBlock, `${message} "${constants.uiComponents.emailInput?.value ?? ''}". ${constants.authModal.messages.spamFolder}`, 'success');
         } else {
             setMessage(constants.uiComponents.authMessageBlock, message, 'error');
         }
     }
     
-    function checkInputValue(inputValue) {
+    function checkInputValue(inputValue: string) {
         let checkResult = true;
         if (!inputValue) {
             setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.emptyInputValue, 'error');
@@ -27,7 +30,7 @@ export function authDialogComponent() {
     
     async function sendEmail() {
         try {
-            if (!checkInputValue(constants.uiComponents.emailInput.value)) {
+            if (!checkInputValue(constants.uiComponents.emailInput?.value ?? '')) {
                 return;
             }
             setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.codeSending, 'info');
@@ -35,7 +38,7 @@ export function authDialogComponent() {
             const response = await fetch(userUrl, {
             method: 'POST',
             body: JSON.stringify({
-                email: constants.uiComponents.emailInput.value
+                email: constants.uiComponents.emailInput?.value ?? ''
             }),
             headers: {
                 'Content-type': 'application/json; charset=UTF-8'
@@ -43,18 +46,20 @@ export function authDialogComponent() {
         });
         //console.log('response', response);
         checkResponseStatus(response.status);
-        const emailCookie = `email=${constants.uiComponents.emailInput.value};samesite=lax;max-age=${constants.tokenLifeTime}`
+        const emailCookie = `email=${constants.uiComponents.emailInput?.value ?? ''};samesite=lax;max-age=${constants.tokenLifeTime}`
         setCookie(emailCookie);
         return await response.json();
         } catch(err) {
             console.error(err);
             setMessage(constants.uiComponents.authMessageBlock, constants.authModal.messages.serverError, 'error');
         } finally {
-            constants.uiComponents.emailInput.value = '';
+            if (constants.uiComponents.emailInput) {
+                constants.uiComponents.emailInput.value = '';
+            }
         }
     }
     
-    async function getCode(e) {
+    async function getCode(e: Event) {
         try {
             e.preventDefault();
             const data = await sendEmail();
@@ -64,6 +69,7 @@ export function authDialogComponent() {
             console.error(err);
         }
     }
+    if (!constants.uiComponents.getCodeBtn) return;
     constants.uiComponents.getCodeBtn.addEventListener('click', getCode);
     
     confirmDialogComponent();

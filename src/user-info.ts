@@ -1,5 +1,5 @@
-import { constants } from "./constants.js";
-import { getToken, setMessage } from "./utils.js";
+import { constants } from "./constants";
+import { getToken, setMessage } from "./utils";
 
 function checkResponseStatus(status) {
     if (status !== 200) {

@@ -1,7 +1,7 @@
-import { constants } from "./constants.js";
-import { getMessageTime } from "./utils.js";
-import { settingsDialogComponent } from "./settings-dialog.js";
-import { getToken, getEmail, clearMessages } from "./utils.js";
+import { constants } from "./constants";
+import { getMessageTime } from "./utils";
+import { settingsDialogComponent } from "./settings-dialog";
+import { getToken, getEmail, clearMessages } from "./utils";
 
 let socket = null;
 let currentChunk = 0;

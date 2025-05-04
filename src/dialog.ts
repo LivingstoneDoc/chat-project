@@ -1,5 +1,5 @@
-import { constants } from "./constants.js";
-import { removeMessage } from "./utils.js";
+import { constants } from "./constants";
+import { removeMessage } from "./utils";
 
 export function openDialogWindow(dialogName) {
     dialogName.showModal();

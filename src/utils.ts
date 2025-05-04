@@ -46,3 +46,15 @@ export function setMessage(messageBlock, message, type) {
 export function removeMessage(messageBlock) {
     messageBlock.classList.add('hide-content');
 }
+
+export function getMissingElementMessage(element: HTMLElement | null) {
+    return `Missing ${element} component`;
+}
+
+export function checkUiElement(element: HTMLElement | null) {
+    if (!element) {
+        console.error(getMissingElementMessage(element));
+        return null; 
+    }
+    return element; 
+}

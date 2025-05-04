@@ -1,8 +1,8 @@
-import { authDialogComponent } from "./auth-dialog.js";
-import { getToken } from "./utils.js";
-import { closeDialogWindow } from "./dialog.js";
-import { constants } from "./constants.js";
-import { showChatWithMessages } from "./chat-render.js";
+import { authDialogComponent } from "./auth-dialog";
+import { getToken } from "./utils";
+import { closeDialogWindow } from "./dialog";
+import { constants } from "./constants";
+import { showChatWithMessages } from "./chat-render";
 
 function isTokenCookieValid() {
     const token = getToken();

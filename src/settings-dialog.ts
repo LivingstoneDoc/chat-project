@@ -1,7 +1,7 @@
-import { constants } from "./constants.js";
-import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog.js";
-import { setMessage, getToken, removeMessage } from "./utils.js";
-import { getUserResponse } from "./user-info.js";
+import { constants } from "./constants";
+import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog";
+import { setMessage, getToken, removeMessage } from "./utils";
+import { getUserResponse } from "./user-info";
 
 export function settingsDialogComponent() {
 
