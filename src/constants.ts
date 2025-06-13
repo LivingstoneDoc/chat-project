@@ -1,20 +1,20 @@
-interface HtmlElement {
+export interface UiElement {
     settingsBtn: HTMLElement | null,
     closeDialogBtns: NodeListOf<Element> | null,
-    settingsDialog: HTMLElement | null,
+    settingsDialog: HTMLDialogElement | null,
     settingsMessageBlock: HTMLElement | null,
-    changeNameForm: HTMLElement | null,
-    changeNameInput: HTMLElement | null,
+    changeNameForm: HTMLFormElement | null,
+    changeNameInput: HTMLInputElement | null,
     changeNameBtn: HTMLElement | null,
-    authDialog: HTMLElement | null,
+    authDialog: HTMLDialogElement | null,
     authMessageBlock: HTMLElement | null,
-    confirmDialog: HTMLElement | null,
+    confirmDialog: HTMLDialogElement | null,
     confirmMessageBlock: HTMLElement | null,
     body: HTMLElement | null,
     messagesWrapper: HTMLElement | null,
-    messageInput: HTMLElement | null,
-    sendMessageForm: HTMLElement | null,
-    messageTemplate: HTMLElement | null,
+    messageInput: HTMLInputElement | null,
+    sendMessageForm: HTMLFormElement | null,
+    messageTemplate: HTMLTemplateElement | null,
     emailInput: HTMLInputElement | null,
     getCodeBtn: HTMLElement | null,
     enterCodeBtn: HTMLElement | null,
@@ -37,7 +37,19 @@ interface AuthModal {
     responseCodes: {[key: number]: string}
 }
 
-const uiComponents: HtmlElement = {
+interface SettingsModal {
+    messages: {
+        emptyNameInput: string,
+        nameTooShort: string,
+        nameTooLong: string,
+        nameChanging: string,
+        nameChangeSuccessfully: string,
+        serverError: string
+    },
+    responseCodes: {[key: number]: string}
+};
+
+const uiComponents: UiElement = {
     settingsBtn: document.querySelector('.settings-btn'),
     closeDialogBtns: document.querySelectorAll('.close-dialog-btn'),
     settingsDialog: document.querySelector('#settingsDialog'),
@@ -89,7 +101,7 @@ authModal.responseCodes = {
     500: authModal.messages.serverError
 }
 
-const settingsModal = {
+const settingsModal: SettingsModal = {
     messages: {
         emptyNameInput: 'Пожалуйста, введите имя',
         nameTooShort: 'Имя слишком короткое',

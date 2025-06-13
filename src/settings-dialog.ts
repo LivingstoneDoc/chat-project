@@ -1,16 +1,20 @@
 import { constants } from "./constants";
 import { openDialogWindow, clickCloseDialog, closeDialogOnBackDrop } from "./dialog";
-import { setMessage, getToken, removeMessage } from "./utils";
+import { setMessage, getToken, removeMessage, checkUiElement } from "./utils";
 import { getUserResponse } from "./user-info";
 
 export function settingsDialogComponent() {
 
-    constants.uiComponents.settingsBtn.addEventListener('click', () => {
+    const settingsBtn = checkUiElement(constants.uiComponents.settingsBtn);
+    if (!settingsBtn) return;
+    settingsBtn.addEventListener('click', () => {
         openDialogWindow(constants.uiComponents.settingsDialog);
         // getUserData();
     });
     clickCloseDialog(constants.uiComponents.settingsDialog, constants.uiComponents.settingsMessageBlock);
-    constants.uiComponents.settingsDialog.addEventListener('click', closeDialogOnBackDrop);
+    const settingsDialog = checkUiElement(constants.uiComponents.settingsDialog);
+    if (!settingsDialog) return;
+    settingsDialog.addEventListener('click', closeDialogOnBackDrop);
 
     async function getUserData() {
         try {
@@ -22,14 +26,14 @@ export function settingsDialogComponent() {
         }
     }
 
-    function checkResponseStatus(status) {
+    function checkResponseStatus(status: number) {
         let message = constants.settingsModal.responseCodes[status];
         if (status !== 200) {
             setMessage(constants.uiComponents.settingsMessageBlock, message, 'error');
         }
     }
 
-    function checkSettingsInput(inputValue) {
+    function checkSettingsInput(inputValue: string) {
         let checkResult = true;
         if (!inputValue) {
             setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.emptyNameInput, 'error');
@@ -48,7 +52,9 @@ export function settingsDialogComponent() {
 
     async function changeName() {
         try {
-            if (!checkSettingsInput(constants.uiComponents.changeNameInput.value)) {
+            const changeNameInput = checkUiElement(constants.uiComponents.changeNameInput);
+            if (!changeNameInput) return;
+            if (!checkSettingsInput(changeNameInput.value)) {
                 return;
             }
             setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.nameChanging, 'info');
@@ -57,7 +63,7 @@ export function settingsDialogComponent() {
             const response = await fetch(userUrl, {
                 method: 'PATCH',
                 body: JSON.stringify({
-                    name: constants.uiComponents.changeNameInput.value
+                    name: changeNameInput.value
                 }),
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
@@ -71,12 +77,14 @@ export function settingsDialogComponent() {
             console.error(err);
             setMessage(constants.uiComponents.settingsMessageBlock, constants.settingsModal.messages.serverError, 'error');
         } finally {
-            constants.uiComponents.changeNameForm.reset();
+            const changeNameForm = checkUiElement(constants.uiComponents.changeNameForm);
+            if (!changeNameForm) return;
+            changeNameForm.reset();
         }
         
     }
 
-    async function getChangedName(e) {
+    async function getChangedName(e: Event) {
         try {
             e.preventDefault();
             const data = await changeName();
@@ -89,5 +97,7 @@ export function settingsDialogComponent() {
             console.error(err);
         }
     }
-    constants.uiComponents.changeNameForm.addEventListener('submit', getChangedName);
+    const changeNameForm = checkUiElement(constants.uiComponents.changeNameForm);
+    if (!changeNameForm) return;
+    changeNameForm.addEventListener('submit', getChangedName);
 }

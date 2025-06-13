@@ -1,10 +1,12 @@
 import { constants } from "./constants";
-import { getToken, setMessage } from "./utils";
+import { getToken, setMessage, checkUiElement } from "./utils";
 
-function checkResponseStatus(status) {
+function checkResponseStatus(status: number) {
     if (status !== 200) {
         setMessage(constants.uiComponents.userInfoBlock, constants.userInfoMessages.userInfoError, 'error');
-        constants.uiComponents.userInfoBlock.classList.remove('hide-content');
+        const userInfoBlock = checkUiElement(constants.uiComponents.userInfoBlock);
+        if (!userInfoBlock) return;
+        userInfoBlock.classList.remove('hide-content');
     }
 }
 

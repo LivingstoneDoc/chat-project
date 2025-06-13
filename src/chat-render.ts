@@ -1,25 +1,42 @@
 import { constants } from "./constants";
 import { getMessageTime } from "./utils";
 import { settingsDialogComponent } from "./settings-dialog";
-import { getToken, getEmail, clearMessages } from "./utils";
+import { getToken, getEmail, clearMessages, checkUiElement } from "./utils";
 
-let socket = null;
+interface User {
+    email: string,
+    name: string
+}
+
+interface MessageData {
+    user: User,
+    text: string,
+    createdAt: string
+}
+
+type MessagesList = MessageData[];
+type MessagesChunk = MessageData[];
+type MessagesChunks = MessagesChunk[];
+
+let socket: WebSocket | null = null;
 let currentChunk = 0;
 let endHistoryMessageShown = false;
 
-function setMessage(message, type) {
+const messagesWrapper = checkUiElement(constants.uiComponents.messagesWrapper);
+function setMessage(message: string, type: string) {
     clearMessages(constants.uiComponents.messagesWrapper);
-    constants.uiComponents.messagesWrapper.textContent = message;
-    constants.uiComponents.messagesWrapper.classList.add(type);
+    if (!messagesWrapper) return;
+    messagesWrapper.textContent = message;
+    messagesWrapper.classList.add(type);
 }
 
-function checkResponseStatus(status) {
+function checkResponseStatus(status: number) {
     if (status !== 200) {
         setMessage(constants.chatMessages.errorGetMessagesList, 'text-center');
     }
 }
 
-function checkMessagesList(messagesList) {
+function checkMessagesList(messagesList: MessagesList) {
     if (messagesList.length === 0) {
         setMessage(constants.chatMessages.emptyMessagesList, 'text-center');
     }
@@ -53,14 +70,14 @@ function initializationWebSocket() {
     }
 }
 
-function checkUserEmail(userEmail) {
+function checkUserEmail(userEmail: string) {
     const emailCookie = getEmail();
     if (emailCookie === userEmail) {
         return true;
     }
 }
 
-function getUserMessagesWithDelay(userEmail, messageItem) {
+function getUserMessagesWithDelay(userEmail: string, messageItem: HTMLElement) {
     if (checkUserEmail(userEmail)) {
         messageItem.classList.add('my-message', 'sent-message');
         setTimeout(() => {
@@ -70,48 +87,64 @@ function getUserMessagesWithDelay(userEmail, messageItem) {
     }
 }
 
-function sendMessage(event) {
+const sendMessageForm = checkUiElement(constants.uiComponents.sendMessageForm);
+function sendMessage(event: Event) {
     event.preventDefault();
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.error('WebSocket is not connected');
         return;
     }
-    const newMessage = constants.uiComponents.messageInput.value.trim();
+    const messageInput = checkUiElement(constants.uiComponents.messageInput);
+    if (!messageInput) return;
+    const newMessage = messageInput.value.trim();
     if (newMessage) {
         try {
             socket.send(JSON.stringify({text: newMessage}));
-            constants.uiComponents.sendMessageForm.reset();
+            if (!sendMessageForm) return;
+            sendMessageForm.reset();
         } catch(error) {
             console.error('Error sending message', error);
         }
     }
 }
-constants.uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
+if (!sendMessageForm) {
+    console.error('Send message form not found');
+} else {
+    sendMessageForm.addEventListener('submit', sendMessage);
+}
 
-function getNewMessage(messageData) {
+function getNewMessage(messageData: MessageData) {
     const message = getMessageTemplate(messageData);
-    constants.uiComponents.messagesWrapper.append(message);
+    if (!messagesWrapper || !message) return;
+    messagesWrapper.append(message);
     if (checkUserEmail(messageData.user.email)) {
-        constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
 }
 
-function getMessageTemplate(messageData) {
+function getMessageTemplate(messageData: MessageData) {
     const message = document.createElement('div');
     message.classList.add('message');
     getUserMessagesWithDelay(messageData.user.email, message);
-    const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true);
-    messageContent.querySelector('.mailer').textContent = `${messageData.user.name}:`;
-    messageContent.querySelector('.text-message').textContent = messageData.text;
+    const messageTemplate = checkUiElement(constants.uiComponents.messageTemplate);
+    if (!messageTemplate) return;
+    const messageContent = messageTemplate.content.cloneNode(true) as DocumentFragment;
+    const mailer = messageContent.querySelector('.mailer');
+    const textMessage = messageContent.querySelector('.text-message');
+    const timeMessage = messageContent.querySelector('.time-message');
+    if (!mailer || !textMessage || !timeMessage) return;
+    mailer.textContent = `${messageData.user.name}:`;
+    textMessage.textContent = messageData.text;
     const messageTime = getMessageTime(messageData.createdAt);
-    messageContent.querySelector('.time-message').textContent = messageTime;
+    timeMessage.textContent = messageTime;
     message.append(messageContent);
     return message;
 }
 
-export function renderMessages(messagesList) {
-    const messagesChunks = [];
-    constants.uiComponents.messagesWrapper.innerHTML = '';
+export function renderMessages(messagesList: MessagesList) {
+    const messagesChunks: MessagesChunks = [];
+    if (!messagesWrapper) return;
+    messagesWrapper.innerHTML = '';
     clearMessages(constants.uiComponents.messagesWrapper);
     checkMessagesList(messagesList);
     
@@ -119,12 +152,12 @@ export function renderMessages(messagesList) {
     
     displayMessagesChunk(messagesChunks[currentChunk]);
 
-    constants.uiComponents.messagesWrapper.addEventListener('scroll', () => {
+    messagesWrapper.addEventListener('scroll', () => {
         handleScroll(messagesChunks);
     });
 }
 
-function convertMessagesListToChunks(messagesList, chunksArr) {
+function convertMessagesListToChunks(messagesList: MessagesList, chunksArr: MessagesChunks) {
     const messagesListCopy = [...messagesList];
     const chunkSize = 20;
     for (let i = 0; i < messagesListCopy.length; i += chunkSize) {
@@ -134,44 +167,50 @@ function convertMessagesListToChunks(messagesList, chunksArr) {
     return chunksArr;
 }
 
-function displayMessagesChunk(chunk) {
+function displayMessagesChunk(chunk: MessagesChunk) {
+    if (!messagesWrapper) return;
     const messagesFragment = document.createDocumentFragment();
     chunk.forEach(item => {
         const message = getMessageTemplate(item);
+        if (!message) return;
         message.classList.add('delivered-message');
         messagesFragment.append(message);
     })
     if (currentChunk > 0) {
-        constants.uiComponents.messagesWrapper.prepend(messagesFragment);
-        const firstMessage = constants.uiComponents.messagesWrapper.firstChild;
-        constants.uiComponents.messagesWrapper.scrollTop = firstMessage.offsetHeight * chunk.length;
+        messagesWrapper.prepend(messagesFragment);
+        const firstMessage = messagesWrapper.firstChild;
+        if (firstMessage && firstMessage instanceof HTMLElement) {
+            messagesWrapper.scrollTop = firstMessage.offsetHeight * chunk.length;
+        }
     } else {
-        constants.uiComponents.messagesWrapper.append(messagesFragment);
-        constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+        messagesWrapper.append(messagesFragment);
+        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
 }
 
-function loadMoreMessages(messagesChunks) {
+function loadMoreMessages(messagesChunks: MessagesChunks) {
     currentChunk++;
     displayMessagesChunk(messagesChunks[currentChunk]);
 }
 
-function handleScroll(chunksArr) {
-    const needShowMoreMessages = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk < chunksArr.length - 1;
+function handleScroll(chunksArr: MessagesChunks) {
+    if (!messagesWrapper) return;
+    const needShowMoreMessages = messagesWrapper.scrollTop === 0 && currentChunk < chunksArr.length - 1;
     if (needShowMoreMessages) {
         loadMoreMessages(chunksArr);
     }
-    const isTheEndOfHistory = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk === chunksArr.length - 1 && !endHistoryMessageShown;
+    const isTheEndOfHistory = messagesWrapper.scrollTop === 0 && currentChunk === chunksArr.length - 1 && !endHistoryMessageShown;
     if (isTheEndOfHistory) {
         createEndHistoryMessage();
     }
 }
 
 function createEndHistoryMessage() {
+    if (!messagesWrapper) return;
     const endHistoryMessage = document.createElement('div');
     endHistoryMessage.classList.add('chat-history-message');
     endHistoryMessage.textContent = 'Вся история загружена';
-    constants.uiComponents.messagesWrapper.prepend(endHistoryMessage);
+    messagesWrapper.prepend(endHistoryMessage);
     endHistoryMessageShown = true;
 }
 
@@ -205,7 +244,9 @@ async function getMessagesData() {
 }
 
 export function showChatWithMessages() {
-    constants.uiComponents.chat.classList.remove('hide-content');
+    const chat = checkUiElement(constants.uiComponents.chat);
+    if (!chat) return;
+    chat.classList.remove('hide-content');
     getMessagesData();
     initializationWebSocket();
 }
