@@ -14,6 +14,10 @@ module.exports = {
             test: /\.ts$/, 
             use: 'ts-loader',
             exclude: /node_modules/ 
+        },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
         }
     ],
   },
@@ -22,7 +26,9 @@ module.exports = {
         directory: path.join(__dirname, 'dist'),
     },
   },
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin({
+    template: './src/index.html',
+  })],
   resolve: {
     extensions: ['.ts', '.js', '.json'],
   },

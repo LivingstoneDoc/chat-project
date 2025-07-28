@@ -1,12 +1,13 @@
 import { constants } from "./constants";
-import { getToken, setMessage, checkUiElement } from "./utils";
+import { getToken, setMessage } from "./utils";
 
 function checkResponseStatus(status: number) {
     if (status !== 200) {
         setMessage(constants.uiComponents.userInfoBlock, constants.userInfoMessages.userInfoError, 'error');
-        const userInfoBlock = checkUiElement(constants.uiComponents.userInfoBlock);
-        if (!userInfoBlock) return;
-        userInfoBlock.classList.remove('hide-content');
+
+        if (constants.uiComponents.userInfoBlock) {
+            constants.uiComponents.userInfoBlock.classList.remove('hide-content');
+        }
     }
 }
 
@@ -20,7 +21,6 @@ export async function getUserResponse() {
                 'Authorization': `Bearer ${token}`
             }
         });
-        //console.log('response', response);
         checkResponseStatus(response.status);
         return await response.json();
     } catch(err) {

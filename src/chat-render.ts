@@ -1,7 +1,7 @@
 import { constants } from "./constants";
 import { getMessageTime } from "./utils";
 import { settingsDialogComponent } from "./settings-dialog";
-import { getToken, getEmail, clearMessages, checkUiElement } from "./utils";
+import { getToken, getEmail, clearMessages } from "./utils";
 
 interface User {
     email: string,
@@ -22,12 +22,12 @@ let socket: WebSocket | null = null;
 let currentChunk = 0;
 let endHistoryMessageShown = false;
 
-const messagesWrapper = checkUiElement(constants.uiComponents.messagesWrapper);
 function setMessage(message: string, type: string) {
     clearMessages(constants.uiComponents.messagesWrapper);
-    if (!messagesWrapper) return;
-    messagesWrapper.textContent = message;
-    messagesWrapper.classList.add(type);
+    if (constants.uiComponents.messagesWrapper) {
+        constants.uiComponents.messagesWrapper.textContent = message;
+        constants.uiComponents.messagesWrapper.classList.add(type);
+    }
 }
 
 function checkResponseStatus(status: number) {
@@ -87,38 +87,38 @@ function getUserMessagesWithDelay(userEmail: string, messageItem: HTMLElement) {
     }
 }
 
-const sendMessageForm = checkUiElement(constants.uiComponents.sendMessageForm);
 function sendMessage(event: Event) {
     event.preventDefault();
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.error('WebSocket is not connected');
         return;
     }
-    const messageInput = checkUiElement(constants.uiComponents.messageInput);
-    if (!messageInput) return;
-    const newMessage = messageInput.value.trim();
-    if (newMessage) {
-        try {
-            socket.send(JSON.stringify({text: newMessage}));
-            if (!sendMessageForm) return;
-            sendMessageForm.reset();
-        } catch(error) {
-            console.error('Error sending message', error);
+
+    if (constants.uiComponents.messageInput) {
+        const newMessage = constants.uiComponents.messageInput.value.trim();
+        if (newMessage) {
+            try {
+                socket.send(JSON.stringify({text: newMessage}));
+                if (constants.uiComponents.sendMessageForm) {
+                    constants.uiComponents.sendMessageForm.reset();
+                }
+            } catch(error) {
+                console.error('Error sending message', error);
+            }
         }
     }
 }
-if (!sendMessageForm) {
-    console.error('Send message form not found');
-} else {
-    sendMessageForm.addEventListener('submit', sendMessage);
+if (constants.uiComponents.sendMessageForm) {
+    constants.uiComponents.sendMessageForm.addEventListener('submit', sendMessage);
 }
 
 function getNewMessage(messageData: MessageData) {
     const message = getMessageTemplate(messageData);
-    if (!messagesWrapper || !message) return;
-    messagesWrapper.append(message);
-    if (checkUserEmail(messageData.user.email)) {
-        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    if (constants.uiComponents.messagesWrapper && message) {
+        constants.uiComponents.messagesWrapper.append(message);
+        if (checkUserEmail(messageData.user.email)) {
+            constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
+        }
     }
 }
 
@@ -126,35 +126,37 @@ function getMessageTemplate(messageData: MessageData) {
     const message = document.createElement('div');
     message.classList.add('message');
     getUserMessagesWithDelay(messageData.user.email, message);
-    const messageTemplate = checkUiElement(constants.uiComponents.messageTemplate);
-    if (!messageTemplate) return;
-    const messageContent = messageTemplate.content.cloneNode(true) as DocumentFragment;
-    const mailer = messageContent.querySelector('.mailer');
-    const textMessage = messageContent.querySelector('.text-message');
-    const timeMessage = messageContent.querySelector('.time-message');
-    if (!mailer || !textMessage || !timeMessage) return;
-    mailer.textContent = `${messageData.user.name}:`;
-    textMessage.textContent = messageData.text;
-    const messageTime = getMessageTime(messageData.createdAt);
-    timeMessage.textContent = messageTime;
-    message.append(messageContent);
-    return message;
+
+    if (constants.uiComponents.messageTemplate) {
+        const messageContent = constants.uiComponents.messageTemplate.content.cloneNode(true) as DocumentFragment;
+        const mailer = messageContent.querySelector('.mailer');
+        const textMessage = messageContent.querySelector('.text-message');
+        const timeMessage = messageContent.querySelector('.time-message');
+        if (!mailer || !textMessage || !timeMessage) return;
+        mailer.textContent = `${messageData.user.name}:`;
+        textMessage.textContent = messageData.text;
+        const messageTime = getMessageTime(messageData.createdAt);
+        timeMessage.textContent = messageTime;
+        message.append(messageContent);
+        return message;
+    }
 }
 
 export function renderMessages(messagesList: MessagesList) {
     const messagesChunks: MessagesChunks = [];
-    if (!messagesWrapper) return;
-    messagesWrapper.innerHTML = '';
-    clearMessages(constants.uiComponents.messagesWrapper);
-    checkMessagesList(messagesList);
-    
-    convertMessagesListToChunks(messagesList, messagesChunks);
-    
-    displayMessagesChunk(messagesChunks[currentChunk]);
+    if (constants.uiComponents.messagesWrapper) {
+        constants.uiComponents.messagesWrapper.innerHTML = '';
+        clearMessages(constants.uiComponents.messagesWrapper);
+        checkMessagesList(messagesList);
+        
+        convertMessagesListToChunks(messagesList, messagesChunks);
+        
+        displayMessagesChunk(messagesChunks[currentChunk]);
 
-    messagesWrapper.addEventListener('scroll', () => {
-        handleScroll(messagesChunks);
-    });
+        constants.uiComponents.messagesWrapper.addEventListener('scroll', () => {
+            handleScroll(messagesChunks);
+        });
+    }
 }
 
 function convertMessagesListToChunks(messagesList: MessagesList, chunksArr: MessagesChunks) {
@@ -168,23 +170,24 @@ function convertMessagesListToChunks(messagesList: MessagesList, chunksArr: Mess
 }
 
 function displayMessagesChunk(chunk: MessagesChunk) {
-    if (!messagesWrapper) return;
-    const messagesFragment = document.createDocumentFragment();
-    chunk.forEach(item => {
-        const message = getMessageTemplate(item);
-        if (!message) return;
-        message.classList.add('delivered-message');
-        messagesFragment.append(message);
-    })
-    if (currentChunk > 0) {
-        messagesWrapper.prepend(messagesFragment);
-        const firstMessage = messagesWrapper.firstChild;
-        if (firstMessage && firstMessage instanceof HTMLElement) {
-            messagesWrapper.scrollTop = firstMessage.offsetHeight * chunk.length;
+    if (constants.uiComponents.messagesWrapper) {
+        const messagesFragment = document.createDocumentFragment();
+        chunk.forEach(item => {
+            const message = getMessageTemplate(item);
+            if (!message) return;
+            message.classList.add('delivered-message');
+            messagesFragment.append(message);
+        })
+        if (currentChunk > 0) {
+            constants.uiComponents.messagesWrapper.prepend(messagesFragment);
+            const firstMessage = constants.uiComponents.messagesWrapper.firstChild;
+            if (firstMessage && firstMessage instanceof HTMLElement) {
+                constants.uiComponents.messagesWrapper.scrollTop = firstMessage.offsetHeight * chunk.length;
+            }
+        } else {
+            constants.uiComponents.messagesWrapper.append(messagesFragment);
+            constants.uiComponents.messagesWrapper.scrollTop = constants.uiComponents.messagesWrapper.scrollHeight;
         }
-    } else {
-        messagesWrapper.append(messagesFragment);
-        messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
     }
 }
 
@@ -194,24 +197,26 @@ function loadMoreMessages(messagesChunks: MessagesChunks) {
 }
 
 function handleScroll(chunksArr: MessagesChunks) {
-    if (!messagesWrapper) return;
-    const needShowMoreMessages = messagesWrapper.scrollTop === 0 && currentChunk < chunksArr.length - 1;
-    if (needShowMoreMessages) {
-        loadMoreMessages(chunksArr);
-    }
-    const isTheEndOfHistory = messagesWrapper.scrollTop === 0 && currentChunk === chunksArr.length - 1 && !endHistoryMessageShown;
-    if (isTheEndOfHistory) {
-        createEndHistoryMessage();
+    if (constants.uiComponents.messagesWrapper) {
+        const needShowMoreMessages = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk < chunksArr.length - 1;
+        if (needShowMoreMessages) {
+            loadMoreMessages(chunksArr);
+        }
+        const isTheEndOfHistory = constants.uiComponents.messagesWrapper.scrollTop === 0 && currentChunk === chunksArr.length - 1 && !endHistoryMessageShown;
+        if (isTheEndOfHistory) {
+            createEndHistoryMessage();
+        }
     }
 }
 
 function createEndHistoryMessage() {
-    if (!messagesWrapper) return;
-    const endHistoryMessage = document.createElement('div');
-    endHistoryMessage.classList.add('chat-history-message');
-    endHistoryMessage.textContent = 'Вся история загружена';
-    messagesWrapper.prepend(endHistoryMessage);
-    endHistoryMessageShown = true;
+    if (constants.uiComponents.messagesWrapper) {
+        const endHistoryMessage = document.createElement('div');
+        endHistoryMessage.classList.add('chat-history-message');
+        endHistoryMessage.textContent = 'Вся история загружена';
+        constants.uiComponents.messagesWrapper.prepend(endHistoryMessage);
+        endHistoryMessageShown = true;
+    }
 }
 
 async function getMessagesResponse() {
@@ -244,9 +249,9 @@ async function getMessagesData() {
 }
 
 export function showChatWithMessages() {
-    const chat = checkUiElement(constants.uiComponents.chat);
-    if (!chat) return;
-    chat.classList.remove('hide-content');
+    if (constants.uiComponents.chat) {
+        constants.uiComponents.chat.classList.remove('hide-content');
+    }
     getMessagesData();
     initializationWebSocket();
 }

@@ -1,37 +1,38 @@
-import { constants, UiElement } from "./constants";
-import { removeMessage, checkUiElement } from "./utils";
+import { constants } from "./constants";
+import { removeMessage } from "./utils";
 
 export function openDialogWindow(dialogName: HTMLDialogElement | null) {
-    const dialog = checkUiElement(dialogName);
-    if (!dialog) return;
-    dialog.showModal();
-    const body = checkUiElement(constants.uiComponents.body);
-    if (!body) return;
-    body.classList.add('scrollLock');
+    if (dialogName) {
+        dialogName.showModal();
+    }
+
+    if (constants.uiComponents.body) {
+        constants.uiComponents.body.classList.add('scrollLock');
+    }
 }
 
 export function closeDialogWindow(dialogName: HTMLDialogElement | null) {
-    const dialog = checkUiElement(dialogName);
-    if (!dialog) return;
-    dialog.close();
+    if (dialogName) {
+        dialogName.close();
+    }
     returnScroll();
 }
 
 export function clickCloseDialog(dialogName: HTMLDialogElement | null, messageBlock: HTMLElement | null) {
-    const closeDialogBtns = checkUiElement(constants.uiComponents.closeDialogBtns);
-    if (!closeDialogBtns) return;
-    closeDialogBtns.forEach(closeBtn => {
-        closeBtn.addEventListener('click', () => {
-            closeDialogWindow(dialogName);
-            removeMessage(messageBlock);
+    if (constants.uiComponents.closeDialogBtns) {
+        constants.uiComponents.closeDialogBtns.forEach(closeBtn => {
+            closeBtn.addEventListener('click', () => {
+                closeDialogWindow(dialogName);
+                removeMessage(messageBlock);
+            })
         })
-    })
+    }
 }
 
 function returnScroll() {
-    const body = checkUiElement(constants.uiComponents.body);
-    if (!body) return;
-    body.classList.remove('scrollLock');
+    if (constants.uiComponents.body) {
+        constants.uiComponents.body.classList.remove('scrollLock');
+    }
 }
 
 export function closeDialogOnBackDrop(e: Event) {

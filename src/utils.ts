@@ -33,34 +33,22 @@ export function getEmail() {
 }
 
 export function clearMessages(messageBlock: HTMLElement | null) {
-    const uiElement = checkUiElement(messageBlock);
-    if (!uiElement) return;
-    uiElement.classList.remove('success', 'error', 'info', 'text-center');
+    if (messageBlock) {
+        messageBlock.classList.remove('success', 'error', 'info', 'text-center');
+    }
 }
 
 export function setMessage(messageBlock: HTMLElement | null, message: string, type: string) {
     clearMessages(messageBlock);
-    const uiElement = checkUiElement(messageBlock);
-    if (!uiElement) return;
-    uiElement.textContent = message;
-    uiElement.classList.add(type);
-    uiElement.classList.remove('hide-content');
+    if (messageBlock) {
+        messageBlock.textContent = message;
+        messageBlock.classList.add(type);
+        messageBlock.classList.remove('hide-content');
+    }
 }
 
 export function removeMessage(messageBlock: HTMLElement | null) {
-    const uiElement = checkUiElement(messageBlock);
-    if (!uiElement) return;
-    uiElement.classList.add('hide-content');
-}
-
-export function getMissingElementMessage<T>(element: T | null) {
-    return `Missing ${element} component`;
-}
-
-export function checkUiElement<T>(element: T | null) {
-    if (!element) {
-        console.error(getMissingElementMessage(element));
-        return null; 
+    if (messageBlock) {
+        messageBlock.classList.add('hide-content');
     }
-    return element; 
 }
